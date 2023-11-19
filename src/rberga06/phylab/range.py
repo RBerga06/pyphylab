@@ -40,6 +40,57 @@ class Range:
         if self.right == +oo:
             object.__setattr__(self, "pright", ")")
 
+    @classmethod
+    def mk(cls, x: "Range | str | slice | float", /) -> "Range":
+        match x:
+            case Range():
+                return x
+            case str():
+                pleft, rng, pright = x[0], x[1:-1], x[-1]
+                if ";" in rng:
+                    sleft, sright = map(str.strip, rng.split(";"))
+                    left = float(sleft) if sleft else -oo
+                    right = float(sright) if sright else +oo
+                else:
+                    # a single point, e.g. '(x]' => [x; x) <=> {x}
+                    left = right = float(rng.strip())
+                return Range(pleft, left, right, pright)  # type: ignore
+            case slice():
+                if x.start is None:
+                    if x.step is None:
+                        if x.stop is None:
+                            # [:] => (-∞; +∞)
+                            left  = -oo
+                            right = +oo
+                        else:
+                            # [:y] => (-∞; y]
+                            left  = -oo
+                            right = x.stop
+                    else:
+                        # [:?:δ] => <!>
+                        raise ValueError(f"Invalid slice for Range construction: {x}.")
+                else:
+                    if x.stop is None:
+                        if x.step is None:
+                            # [x:] => [x; +∞)
+                            left = x.start
+                            right = +oo
+                        else:
+                            # [x::δ] => [x-δ; x+δ]
+                            left  = x.start - x.step
+                            right = x.start + x.step
+                    else:
+                        if x.step is None:
+                            # [x:y] => [x; y]
+                            left  = x.start
+                            right = x.stop
+                        else:
+                            # [x:y:δ] => <!>
+                            raise ValueError(f"Invalid slice for Range construction: {x}.")
+                return Range("[", left, right, "]")
+            case float() | int():  # [x] => [x; x)
+                return Range("[", x, x, ")")
+
     def __and__(self, other: "Range", /) -> "Range":
         left, pleft = max(
             (self.left, self.pleft),
@@ -79,54 +130,7 @@ class Range:
         return self & Range("[", left, +oo, ")")
 
     def __getitem__(self, key: "Range | str | slice | float", /) -> "Range":
-        match key:
-            case Range():
-                return self & key
-            case str():
-                pleft, rng, pright = key[0], key[1:-1], key[-1]
-                if ";" in rng:
-                    sleft, sright = map(str.strip, rng.split(";"))
-                    left = float(sleft) if sleft else -oo
-                    right = float(sright) if sright else +oo
-                else:
-                    # a single point, e.g. '(x]' => [x; x) <=> {x}
-                    left = right = float(rng.strip())
-                return self & Range(pleft, left, right, pright)  # type: ignore
-            case slice():
-                if key.start is None:
-                    if key.step is None:
-                        if key.stop is None:
-                            # [:] => (-∞; +∞)
-                            left  = -oo
-                            right = +oo
-                        else:
-                            # [:y] => (-∞; y]
-                            left  = -oo
-                            right = key.stop
-                    else:
-                        # [:?:δ] => <!>
-                        raise ValueError(f"Invalid slice for Range construction: {key}.")
-                else:
-                    if key.stop is None:
-                        if key.step is None:
-                            # [x:] => [x; +∞)
-                            left = key.start
-                            right = +oo
-                        else:
-                            # [x::δ] => [x-δ; x+δ]
-                            left  = key.start - key.step
-                            right = key.start + key.step
-                    else:
-                        if key.step is None:
-                            # [x:y] => [x; y]
-                            left  = key.start
-                            right = key.stop
-                        else:
-                            # [x:y:δ] => <!>
-                            raise ValueError(f"Invalid slice for Range construction: {key}.")
-                return self & Range("[", left, right, "]")
-            case float() | int():  # [x] => [x; x)
-                return self & Range("[", key, key, ")")
+        return self & Range.mk(key)
 
     # --- Python standard methods ---
 
