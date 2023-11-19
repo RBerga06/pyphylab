@@ -49,3 +49,6 @@ class Normal[M: Measure](Dist[M]):
         left  = min(self.data, key=lambda m: m.best)
         right = max(self.data, key=lambda m: m.best)
         return Range("[", left.best - left.delta, right.best + right.delta, "]").split(self.nbins)
+
+
+__all__ = ["Normal"]
