@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 from dataclasses import dataclass
-from typing import Iterable, Iterator, Protocol, Sequence, overload
+from typing import Iterable, Iterator, Protocol, Sequence, overload, override
 from .measure import Measure
 from .range import Range
 
@@ -30,7 +30,7 @@ class AbstractDist(Protocol):
 
 
 @dataclass(slots=True, frozen=True)
-class DistBin[M: Measure]:
+class DistBin[M: Measure](_ImmutableDataProxy[M]):
     """A dynamic container for distribution bins."""
     _dist: "Dist[M]"
     r: Range
@@ -40,7 +40,8 @@ class DistBin[M: Measure]:
         return (self.r.right + self.r.left)/2
 
     @property
-    def data(self, /) -> tuple[M, ...]:
+    @override
+    def data(self, /) -> tuple[M, ...]:  # pyright: ignore[reportIncompatibleVariableOverride]
         return tuple([d for d in self._dist.data if d.best in self.r])
 
 
