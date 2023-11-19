@@ -60,6 +60,13 @@ class Measure(Protocol):
             return Datum.from_delta_rel(other / self.best, self.delta_rel)
         return Datum.from_delta_rel(other.best / self.best, other.delta_rel + self.delta_rel)
 
+    # --- Comparison ---
+
+    def ε(self, other: "Measure | float", /) -> float:
+        if isinstance(other, float | int):
+            return (self.best - other)/self.delta
+        return (self.best - other.best)/(self.delta + other.delta)
+
 
 @final
 @dataclass(slots=True, frozen=True)
