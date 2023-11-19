@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from math import inf as oo
 from typing import Literal, final, override
 
+
 def _infrepr(x: float, /) -> str:
     if x == oo:
         return "+∞"
@@ -14,6 +15,7 @@ def _infrepr(x: float, /) -> str:
 
 
 _PARENS = "[()]".split()
+
 
 @final
 @dataclass(slots=True, frozen=True)
@@ -76,8 +78,10 @@ class Range:
     def __le__(self, left: float, /) -> "Range":
         return self & Range("[", left, +oo, ")")
 
-    def __getitem__(self, key: str | slice | float, /) -> "Range":
+    def __getitem__(self, key: "Range | str | slice | float", /) -> "Range":
         match key:
+            case Range():
+                return self & key
             case str():
                 pleft, rng, pright = key[0], key[1:-1], key[-1]
                 if ";" in rng:
@@ -156,6 +160,8 @@ class Range:
             return False
         return True
 
+
 R = Range()
+
 
 __all__ = ["Range", "R"]

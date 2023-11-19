@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 from dataclasses import dataclass
-from typing import Iterable, Iterator, Protocol, Sequence, overload, override
+from typing import Iterable, Iterator, Protocol, Sequence, final, overload, override
 from .measure import Measure
 from .range import Range
 
@@ -25,14 +25,11 @@ class _ImmutableDataProxy[T](Protocol):
 
 
 
-class AbstractDist(Protocol):
-    def probability(self, x: Range, /) -> float: ...
-
-
+@final
 @dataclass(slots=True, frozen=True)
 class DistBin[M: Measure](_ImmutableDataProxy[M]):
     """A dynamic container for distribution bins."""
-    _dist: "Dist[M]"
+    dist: "Dist[M]"
     r: Range
 
     @property
@@ -42,10 +39,11 @@ class DistBin[M: Measure](_ImmutableDataProxy[M]):
     @property
     @override
     def data(self, /) -> tuple[M, ...]:  # pyright: ignore[reportIncompatibleVariableOverride]
-        return tuple([d for d in self._dist.data if d.best in self.r])
+        return tuple([d for d in self.dist.data if d.best in self.r])
 
 
-class Dist[M: Measure](_ImmutableDataProxy[M], Measure, AbstractDist, Protocol):
+
+class Dist[M: Measure](_ImmutableDataProxy[M], Measure, Protocol):
     """An (abstract) distribution."""
     data: Sequence[M]
 
@@ -56,6 +54,8 @@ class Dist[M: Measure](_ImmutableDataProxy[M], Measure, AbstractDist, Protocol):
     def bins(self, /) -> tuple[DistBin[M], ...]:
         return tuple([DistBin(self, r) for r in self.binsr])
 
+    def probability(self, x: Range, /) -> float: ...
+
     @overload
     def expected(self, x: None = ..., /) -> float: ...
     @overload
@@ -65,3 +65,7 @@ class Dist[M: Measure](_ImmutableDataProxy[M], Measure, AbstractDist, Protocol):
             n = len(self.data)
             return tuple([self.probability(r)*n for r in self.binsr])
         return self.probability(x) * len(self.data)
+
+
+
+__all__ = ["DistBin", "Dist"]
