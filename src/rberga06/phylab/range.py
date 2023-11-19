@@ -132,6 +132,14 @@ class Range:
     def __getitem__(self, key: "Range | str | slice | float", /) -> "Range":
         return self & Range.mk(key)
 
+    def split(self, n: int, /) -> tuple["Range", ...]:
+        """Split this range into `n` smaller ones."""
+        dx = (self.right - self.left)/n
+        ranges = [Range("(", self.left+i*dx, self.left+(i+1)*dx, "]") for i in range(n)]
+        object.__setattr__(ranges[0],  "pleft",  self.pleft)
+        object.__setattr__(ranges[-1], "pright", self.pright)
+        return tuple(ranges)
+
     # --- Python standard methods ---
 
     @override
