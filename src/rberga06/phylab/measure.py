@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from typing import Protocol, Self, final
 
 
-class _Measure(Protocol):
+class Measure(Protocol):
     best: float
     delta: float
 
@@ -18,12 +18,12 @@ class _Measure(Protocol):
     def __pos__(self, /) -> Self:
         return self
 
-    def __neg__(self, /) -> "_Measure":
+    def __neg__(self, /) -> "Measure":
         return Datum(-self.best, self.delta)
 
     # --- Binary operators ---
 
-    def __add__(self, other: "_Measure | float") -> "_Measure":
+    def __add__(self, other: "Measure | float") -> "Measure":
         if isinstance(other, float | int):
             return Datum(self.best + other, self.delta)
         return Datum(self.best + other.best, self.delta + other.delta)
@@ -61,16 +61,9 @@ class _Measure(Protocol):
         return Datum.from_delta_rel(other.best / self.best, other.delta_rel + self.delta_rel)
 
 
-class Measure(_Measure, Protocol):
-    @property
-    def best(self, /) -> float: ...  # type: ignore[reportIncompatibleOverride]
-    @property
-    def delta(self, /) -> float: ...  # type: ignore[reportIncompatibleOverride]
-
-
 @final
 @dataclass(slots=True, frozen=True)
-class Datum(_Measure):
+class Datum(Measure):
     best: float
     delta: float
 
