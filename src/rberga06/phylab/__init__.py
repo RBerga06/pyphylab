@@ -5,3 +5,4 @@ from .range import *
 from .measure import *
 from .constants import *
 from .distribution import *
+from .normal import *
