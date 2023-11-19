@@ -6,28 +6,24 @@ from .measure import Measure
 from .range import Range
 
 
-class _ImmutableDataProxy[T](Protocol):
+class _MeasureSequence[M: Measure](Protocol):
     """A proxy around the `data` attribute."""
-    data: Sequence[T]
+    data: Sequence[M]
 
     def __len__(self, /) -> int:
         return len(self.data)
 
-    def __iter__(self, /) -> Iterator[T]:
+    def __iter__(self, /) -> Iterator[M]:
         return iter(self.data)
 
-    @overload
-    def __getitem__(self, key: int, /) -> T: ...
-    @overload
-    def __getitem__(self, key: slice, /) -> Sequence[T]: ...
-    def __getitem__(self, key: int | slice, /) -> T | Sequence[T]:
-        return self.data[key]
+    def __getitem__(self, key: "Range | str | slice | float", /) -> tuple[M, ...]:
+        return tuple([x for x in self.data if x.best in Range.mk(key)])
 
 
 
 @final
 @dataclass(slots=True, frozen=True)
-class DistBin[M: Measure](_ImmutableDataProxy[M]):
+class DistBin[M: Measure](_MeasureSequence[M]):
     """A dynamic container for distribution bins."""
     dist: "Dist[M]"
     r: Range
@@ -39,11 +35,11 @@ class DistBin[M: Measure](_ImmutableDataProxy[M]):
     @property
     @override
     def data(self, /) -> tuple[M, ...]:  # pyright: ignore[reportIncompatibleVariableOverride]
-        return tuple([d for d in self.dist.data if d.best in self.r])
+        return self.dist[self.r]
 
 
 
-class Dist[M: Measure](_ImmutableDataProxy[M], Measure, Protocol):
+class Dist[M: Measure](_MeasureSequence[M], Measure, Protocol):
     """An (abstract) distribution."""
     data: Sequence[M]
 
