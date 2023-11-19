@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 from dataclasses import dataclass
+from math import ceil, floor
 from typing import Iterable, Iterator, Protocol, Sequence, final, overload, override
 from .measure import Measure
 from .range import Range
@@ -50,6 +51,10 @@ class Dist[M: Measure](_MeasureSequence[M], Measure, Protocol):
     def bins(self, /) -> tuple[DistBin[M], ...]:
         return tuple([DistBin(self, r) for r in self.binsr])
 
+    @property
+    def average(self, /) -> float:
+        return sum([len(bin) * bin.center for bin in self.bins])
+
     def probability(self, x: Range, /) -> float: ...
 
     @overload
@@ -64,4 +69,12 @@ class Dist[M: Measure](_MeasureSequence[M], Measure, Protocol):
 
 
 
-__all__ = ["DistBin", "Dist"]
+class DiscreteDist[M: Measure](Dist[M], Protocol):
+    def discrete_probability(self, x: int, /) -> float: ...
+
+    @override
+    def probability(self, x: Range, /) -> float:
+        return sum(map(self.discrete_probability, range(int(ceil(x.left)), int(floor(x.right)))))
+
+
+__all__ = ["DistBin", "Dist", "DiscreteDist"]

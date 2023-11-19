@@ -1,28 +1,22 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Normal distribution."""
-from math import erf, floor, sqrt
+"""Poisson distribution."""
+from math import factorial, exp, sqrt
 from dataclasses import dataclass
 from typing import Sequence, override
 
 from .range import Range
 from .measure import Measure
-from .distribution import Dist
+from .distribution import DiscreteDist
 
 
 @dataclass(slots=True, frozen=True)
-class Normal[M: Measure](Dist[M]):
+class Poisson[M: Measure](DiscreteDist[M]):
     data: Sequence[M]
 
     @property
     def sigma(self, /) -> float:
-        µ = self.average
-        N = len(self.data)
-        return sqrt(sum([len(b)*(b.center - µ)**2 for b in self.bins])/(N-1))
-
-    @property
-    def nbins(self, /) -> int:
-        return int(floor(sqrt(len(self.data))))
+        return sqrt(self.average)
 
     @property
     @override
@@ -35,16 +29,16 @@ class Normal[M: Measure](Dist[M]):
         return self.sigma / sqrt(len(self.data))
 
     @override
-    def probability(self, r: Range, /) -> float:
-        µ, s = self.average, self.sigma
-        return (erf((r.right-µ)/s) - erf((r.left-µ)/s))/2
+    def discrete_probability(self, x: int, /) -> float:
+        µ = self.average
+        return (pow(µ, x) * exp(-µ))/factorial(x)
 
     @property
     @override
     def binsr(self, /) -> tuple[Range, ...]:
         left  = min(self.data, key=lambda m: m.best)
         right = max(self.data, key=lambda m: m.best)
-        return Range("[", left.best - left.delta, right.best + right.delta, "]").split(self.nbins)
+        return tuple(map(Range.mk, range(int(left.best), int(right.best) + 1)))
 
 
-__all__ = ["Normal"]
+__all__ = ["Poisson"]
