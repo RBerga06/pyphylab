@@ -53,7 +53,7 @@ class Dist[M: Measure](_MeasureSequence[M], Measure, Protocol):
 
     @property
     def average(self, /) -> float:
-        return sum([len(bin) * bin.center for bin in self.bins])
+        return sum([len(bin) * bin.center for bin in self.bins])/len(self.data)
 
     def probability(self, x: Range, /) -> float: ...
 
