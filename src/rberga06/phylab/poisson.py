@@ -7,11 +7,11 @@ from typing import Sequence, override
 
 from .range import Range
 from .measure import Measure
-from .distribution import DiscreteDist
+from .distribution import DiscreteDist, best
 
 
 @dataclass(slots=True, frozen=True)
-class Poisson[M: Measure](DiscreteDist[M]):
+class Poisson[M: Measure | float](DiscreteDist[M]):
     data: Sequence[M]
 
     @property
@@ -36,9 +36,9 @@ class Poisson[M: Measure](DiscreteDist[M]):
     @property
     @override
     def binsr(self, /) -> tuple[Range, ...]:
-        left  = min(self.data, key=lambda m: m.best)
-        right = max(self.data, key=lambda m: m.best)
-        return tuple(map(Range.mk, range(int(left.best), int(right.best) + 1)))
+        left  = min(self.data, key=best)
+        right = max(self.data, key=best)
+        return tuple(map(Range.mk, range(int(best(left)), int(best(right)) + 1)))
 
 
 __all__ = ["Poisson"]
