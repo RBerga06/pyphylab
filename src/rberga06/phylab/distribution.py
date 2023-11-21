@@ -7,7 +7,13 @@ from .measure import Measure
 from .range import Range
 
 
-class _MeasureSequence[M: Measure](Protocol):
+def best(x: Measure | float) -> float:
+    if isinstance(x, float | int):
+        return x
+    return x.best
+
+
+class _DataSequence[M: Measure | float](Protocol):
     """A proxy around the `data` attribute."""
     data: Sequence[M]
 
@@ -18,13 +24,12 @@ class _MeasureSequence[M: Measure](Protocol):
         return iter(self.data)
 
     def __getitem__(self, key: "Range | str | slice | float", /) -> tuple[M, ...]:
-        return tuple([x for x in self.data if x.best in Range.mk(key)])
-
+        return tuple([x for x in self.data if best(x) in Range.mk(key)])
 
 
 @final
 @dataclass(slots=True, frozen=True)
-class DistBin[M: Measure](_MeasureSequence[M]):
+class DistBin[M: Measure | float](_DataSequence[M]):
     """A dynamic container for distribution bins."""
     dist: "Dist[M]"
     r: Range
@@ -40,7 +45,7 @@ class DistBin[M: Measure](_MeasureSequence[M]):
 
 
 
-class Dist[M: Measure](_MeasureSequence[M], Measure, Protocol):
+class Dist[M: Measure | float](_DataSequence[M], Measure, Protocol):
     """An (abstract) distribution."""
     data: Sequence[M]
 
@@ -69,12 +74,15 @@ class Dist[M: Measure](_MeasureSequence[M], Measure, Protocol):
 
 
 
-class DiscreteDist[M: Measure](Dist[M], Protocol):
+class DiscreteDist[M: Measure | float](Dist[M], Protocol):
+    """A discrete (abstract) distribution."""
+
     def discrete_probability(self, x: int, /) -> float: ...
 
     @override
     def probability(self, x: Range, /) -> float:
         return sum(map(self.discrete_probability, range(int(ceil(x.left)), int(floor(x.right)))))
+
 
 
 __all__ = ["DistBin", "Dist", "DiscreteDist"]
