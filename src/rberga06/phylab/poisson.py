@@ -11,7 +11,7 @@ from .distribution import DiscreteDist, best
 
 
 @dataclass(slots=True, frozen=True)
-class Poisson[M: Measure | float](DiscreteDist[M]):
+class Poisson[M: Measure[int] | int](DiscreteDist[M]):
     data: Sequence[M]
 
     @property

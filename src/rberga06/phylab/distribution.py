@@ -3,7 +3,7 @@
 from dataclasses import dataclass
 from math import ceil, floor
 from typing import Iterable, Iterator, Protocol, Self, Sequence, final, overload, override
-from .measure import Measure
+from .measure import Measure, AMeasure
 from .range import Range
 
 
@@ -15,13 +15,13 @@ def _cumulative[X](data: Iterable[X]) -> Iterator[tuple[X, ...]]:
         yield cumul
 
 
-def best(x: Measure | float) -> float:
+def best[X: (float, int)](x: Measure[X] | X, /) -> X:
     if isinstance(x, float | int):
         return x
     return x.best
 
 
-class _DataSequence[M: Measure | float](Protocol):
+class _DataSequence[M: AMeasure | float](Protocol):
     """A proxy around the `data` attribute."""
     data: Sequence[M]
 
@@ -37,7 +37,7 @@ class _DataSequence[M: Measure | float](Protocol):
 
 @final
 @dataclass(slots=True, frozen=True)
-class DistBin[M: Measure | float](_DataSequence[M]):
+class DistBin[M: AMeasure | float](_DataSequence[M]):
     """A dynamic container for distribution bins."""
     dist: "Dist[M]"
     r: Range
@@ -53,7 +53,7 @@ class DistBin[M: Measure | float](_DataSequence[M]):
 
 
 
-class Dist[M: Measure | float](_DataSequence[M], Measure, Protocol):
+class Dist[M: AMeasure | float](_DataSequence[M], Measure[float], Protocol):
     """An (abstract) distribution."""
     data: Sequence[M]
 
@@ -89,7 +89,7 @@ class Dist[M: Measure | float](_DataSequence[M], Measure, Protocol):
 
 
 
-class DiscreteDist[M: Measure | float](Dist[M], Protocol):
+class DiscreteDist[M: Measure[int] | int](Dist[M], Protocol):
     """A discrete (abstract) distribution."""
 
     def discrete_probability(self, x: int, /) -> float: ...
