@@ -2,9 +2,17 @@
 # -*- coding: utf-8 -*-
 from dataclasses import dataclass
 from math import ceil, floor
-from typing import Iterable, Iterator, Protocol, Sequence, final, overload, override
+from typing import Iterable, Iterator, Protocol, Self, Sequence, final, overload, override
 from .measure import Measure
 from .range import Range
+
+
+def _cumulative[X](data: Iterable[X]) -> Iterator[tuple[X, ...]]:
+    cumul: tuple[X, ...] = ()
+    yield cumul
+    for x in data:
+        cumul += (x,)
+        yield cumul
 
 
 def best(x: Measure | float) -> float:
@@ -72,6 +80,10 @@ class Dist[M: Measure | float](_DataSequence[M], Measure, Protocol):
             return tuple([self.probability(r)*n for r in self.binsr])
         return self.probability(x) * len(self.data)
 
+    @classmethod
+    def mk_iter_cumulative(cls, data: Iterable[M]) -> Iterator[Self]:
+        for d in _cumulative(data):
+            yield cls(d)
 
 
 class DiscreteDist[M: Measure | float](Dist[M], Protocol):
