@@ -36,8 +36,8 @@ class Poisson[M: Measure | float](DiscreteDist[M]):
     @property
     @override
     def binsr(self, /) -> tuple[Range, ...]:
-        left  = min(self.data, key=best)
-        right = max(self.data, key=best)
+        left  = min(self.data or [0], key=best)
+        right = max(self.data or [0], key=best)
         return tuple(map(Range.mk, range(int(best(left)), int(best(right)) + 1)))
 
 

@@ -66,6 +66,8 @@ class Dist[M: Measure | float](_DataSequence[M], Measure, Protocol):
 
     @property
     def average(self, /) -> float:
+        if not self.data:
+            return 0.
         return sum([len(bin) * bin.center for bin in self.bins])/len(self.data)
 
     def probability(self, x: Range, /) -> float: ...
@@ -84,6 +86,7 @@ class Dist[M: Measure | float](_DataSequence[M], Measure, Protocol):
     def mk_iter_cumulative(cls, data: Iterable[M]) -> Iterator[Self]:
         for d in _cumulative(data):
             yield cls(d)
+
 
 
 class DiscreteDist[M: Measure | float](Dist[M], Protocol):
