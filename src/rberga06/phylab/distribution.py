@@ -3,7 +3,7 @@
 from dataclasses import dataclass
 from math import ceil, floor
 from typing import Iterable, Iterator, Protocol, Self, Sequence, final, overload, override
-from .measure import Measure, AnyMeasureLike
+from .measure import Measure, AnyMeasureLike, MeasureLike
 from .range import Range
 
 
@@ -15,7 +15,7 @@ def _cumulative[X](data: Iterable[X]) -> Iterator[tuple[X, ...]]:
         yield cumul
 
 
-def best[X: (float, int)](x: Measure[X] | X, /) -> X:
+def best[X: (float, int)](x: MeasureLike[X], /) -> X:
     if isinstance(x, float | int):
         return x
     return x.best
