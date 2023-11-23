@@ -14,7 +14,7 @@ def _infrepr(x: float, /) -> str:
     return repr(x)
 
 
-_PARENS = "[()]".split()
+_PARENS = [*"[()]"]
 
 
 @final
