@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 """Abstract measure."""
 from dataclasses import dataclass
-from typing import Any, Protocol, Self, final, overload
+from typing import Any, Protocol, Self, cast, final, overload
 
 
 class Measure[X: (float, int)](Protocol):
@@ -54,7 +54,7 @@ class Measure[X: (float, int)](Protocol):
         return Datum.from_delta_rel(self.best / other.best, self.delta_rel + other.delta_rel)
 
     def __pow__(self, other: int, /) -> "Measure[X]":
-        return Datum.from_delta_rel(self.best ** other, self.delta_rel * abs(other))
+        return Datum[X].from_delta_rel(cast(X, self.best ** other), self.delta_rel * abs(other))
 
     # --- Right operands ---
 
@@ -99,11 +99,11 @@ class Datum[X: (float, int)](Measure[X]):
     delta: X
 
     @classmethod
-    def from_const(cls, const: float, /) -> Self:
-        return cls(const, 0)
+    def from_const(cls, const: X, /) -> Self:
+        return cls(const, cast(X, 0))
 
     @classmethod
-    def from_delta_rel(cls, best: float, delta_rel: float, /) -> Self:
+    def from_delta_rel(cls, best: X, delta_rel: float, /) -> Self:
         return cls(best, delta_rel * best)
 
 
