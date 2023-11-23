@@ -107,6 +107,9 @@ class Datum[X: (float, int)](Measure[X]):
         return cls(best, delta_rel * best)
 
 
-type AMeasure = Measure[float] | Measure[int]
+type AnyMeasure = Measure[float] | Measure[int]
+type MeasureLike[X: (float, int)] = Measure[X] | X
+type AnyMeasureLike = MeasureLike[float] | MeasureLike[int]
 
-__all__ = ["Measure", "Datum"]
+
+__all__ = ["Measure", "AnyMeasure", "MeasureLike", "AnyMeasureLike", "Datum"]

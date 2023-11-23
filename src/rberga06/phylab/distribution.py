@@ -3,7 +3,7 @@
 from dataclasses import dataclass
 from math import ceil, floor
 from typing import Iterable, Iterator, Protocol, Self, Sequence, final, overload, override
-from .measure import Measure, AMeasure
+from .measure import Measure, AnyMeasureLike
 from .range import Range
 
 
@@ -21,7 +21,7 @@ def best[X: (float, int)](x: Measure[X] | X, /) -> X:
     return x.best
 
 
-class _DataSequence[M: AMeasure | float](Protocol):
+class _DataSequence[M: AnyMeasureLike](Protocol):
     """A proxy around the `data` attribute."""
     data: Sequence[M]
 
@@ -37,7 +37,7 @@ class _DataSequence[M: AMeasure | float](Protocol):
 
 @final
 @dataclass(slots=True, frozen=True)
-class DistBin[M: AMeasure | float](_DataSequence[M]):
+class DistBin[M: AnyMeasureLike](_DataSequence[M]):
     """A dynamic container for distribution bins."""
     dist: "Dist[M]"
     r: Range
@@ -53,7 +53,7 @@ class DistBin[M: AMeasure | float](_DataSequence[M]):
 
 
 
-class Dist[M: AMeasure | float](_DataSequence[M], Measure[float], Protocol):
+class Dist[M: AnyMeasureLike](_DataSequence[M], Measure[float], Protocol):
     """An (abstract) distribution."""
     data: Sequence[M]
 

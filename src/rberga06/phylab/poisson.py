@@ -6,12 +6,12 @@ from dataclasses import dataclass
 from typing import Sequence, override
 
 from .range import Range
-from .measure import Measure
+from .measure import MeasureLike
 from .distribution import DiscreteDist, best
 
 
 @dataclass(slots=True, frozen=True)
-class Poisson[M: Measure[int] | int](DiscreteDist[M]):
+class Poisson[M: MeasureLike[int]](DiscreteDist[M]):
     data: Sequence[M]
 
     @property

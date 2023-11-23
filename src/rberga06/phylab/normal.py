@@ -6,12 +6,12 @@ from dataclasses import dataclass
 from typing import Sequence, override
 
 from .range import Range
-from .measure import AMeasure
+from .measure import AnyMeasure
 from .distribution import Dist
 
 
 @dataclass(slots=True, frozen=True)
-class Normal[M: AMeasure](Dist[M]):
+class Normal[M: AnyMeasure](Dist[M]):
     data: Sequence[M]
 
     @property
