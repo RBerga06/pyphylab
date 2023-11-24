@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # pyright: reportMissingTypeStubs=false
 """Manim CE support/utilities."""
-from typing import Any, Sequence, type_check_only
+from typing import Any, Sequence
 from manim.utils.color import manim_colors, ManimColor
 from manim import BarChart
 
@@ -37,6 +37,5 @@ def hist_discrete[M: MeasureLike[int]](
     )
 
 
-@type_check_only
 def hist[X: (int, float)](dist: Dist[X], /, **kwargs: Any) -> BarChart:
     raise NotImplementedError
