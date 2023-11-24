@@ -5,4 +5,5 @@ from .range import *
 from .measure import *
 from .constants import *
 from .distribution import *
+from .poisson import *
 from .normal import *
