@@ -52,7 +52,7 @@ class Range:
                     left = float(sleft) if sleft else -oo
                     right = float(sright) if sright else +oo
                 else:
-                    # a single point, e.g. '(x]' => [x; x) <=> {x}
+                    # a single point, e.g. '[x]' => [x; x] <=> {x}
                     left = right = float(rng.strip())
                 return Range(pleft, left, right, pright)  # type: ignore
             case slice():
@@ -88,8 +88,8 @@ class Range:
                             # [x:y:δ] => <!>
                             raise ValueError(f"Invalid slice for Range construction: {x}.")
                 return Range("[", left, right, "]")
-            case float() | int():  # [x] => [x; x)
-                return Range("[", x, x, ")")
+            case float() | int():  # [x] => [x; x]
+                return Range("[", x, x, "]")
 
     def __and__(self, other: "Range", /) -> "Range":
         left, pleft = max(
