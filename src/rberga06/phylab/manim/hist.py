@@ -5,9 +5,9 @@
 # pyright: reportIncompatibleVariableOverride=false
 """Histogram for Distributions."""
 from typing import Any, Sequence
-from manim import BarChart
+from manim import BarChart, Circle
 from manim.typing import Point3D
-from manim.constants import MED_SMALL_BUFF
+from manim.constants import MED_SMALL_BUFF, DEFAULT_DOT_RADIUS
 from manim.mobject.types.vectorized_mobject import VMobject, VGroup
 from manim.mobject.text.tex_mobject import Tex
 from manim.mobject.geometry.line import DashedLine
@@ -31,6 +31,7 @@ class DiscreteDistributionHistogram[D: DiscreteDist[Any]](BarChart):
     dist: D
     bar_labels: VGroup
     avg_line: DashedLine
+    expected_dots: VGroup
 
     def __init__(
         self,
@@ -72,3 +73,11 @@ class DiscreteDistributionHistogram[D: DiscreteDist[Any]](BarChart):
         )
         self.add(self.avg_line)
         return self.avg_line
+
+    def add_expected_dots(self, /) -> VGroup:
+        self.expected_dots = VGroup(*[
+            Circle(DEFAULT_DOT_RADIUS).move_to(self.pt(i, h))
+            for i, h in enumerate(self.dist.expected())
+        ])
+        self.add(self.expected_dots)
+        return self.expected_dots
