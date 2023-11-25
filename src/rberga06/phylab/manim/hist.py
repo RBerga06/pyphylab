@@ -12,7 +12,6 @@ from manim.mobject.types.vectorized_mobject import VMobject, VGroup
 from manim.mobject.text.tex_mobject import Tex
 from manim.mobject.geometry.line import DashedLine
 from manim.utils.color import ParsableManimColor, manim_colors, ManimColor
-from ..measure import Measure, MeasureLike
 from ..distribution import DiscreteDist
 
 
@@ -27,9 +26,8 @@ DEFAULT_BAR_COLORS = (
 )
 
 
-class DiscreteDistributionHistogram[
-    D: DiscreteDist[int] | DiscreteDist[Measure[int]] | DiscreteDist[MeasureLike[int]]
-](BarChart):
+class DiscreteDistributionHistogram[D: DiscreteDist[Any]](BarChart):
+    y_range: tuple[float, float, float]
     dist: D
     bar_labels: VGroup
     avg_line: DashedLine
@@ -53,7 +51,7 @@ class DiscreteDistributionHistogram[
 
     def pt(self, x: float, y: float, /) -> Point3D:
         """Get the correct coordinates for a point in the graph."""
-        return self.coords_to_point(x + .5, y, 0)  # type: ignore
+        return self.coords_to_point(x+.5, y, 0)  # type: ignore
 
     def add_bar_labels(
         self,
@@ -70,7 +68,7 @@ class DiscreteDistributionHistogram[
     def add_avg_line(self, /) -> DashedLine:
         self.avg_line = DashedLine(
             self.pt(self.dist.average, 0),
-            self.pt(self.dist.average, self.y_range[0]),
+            self.pt(self.dist.average, self.y_range[1]),
         )
         self.add(self.avg_line)
         return self.avg_line
