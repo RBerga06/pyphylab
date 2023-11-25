@@ -6,9 +6,11 @@
 """Histogram for Distributions."""
 from typing import Any, Sequence
 from manim import BarChart
+from manim.typing import Point3D
 from manim.constants import MED_SMALL_BUFF
 from manim.mobject.types.vectorized_mobject import VMobject, VGroup
 from manim.mobject.text.tex_mobject import Tex
+from manim.mobject.geometry.line import DashedLine
 from manim.utils.color import ParsableManimColor, manim_colors, ManimColor
 from ..measure import Measure, MeasureLike
 from ..distribution import DiscreteDist
@@ -28,7 +30,9 @@ DEFAULT_BAR_COLORS = (
 class DiscreteDistributionHistogram[
     D: DiscreteDist[int] | DiscreteDist[Measure[int]] | DiscreteDist[MeasureLike[int]]
 ](BarChart):
+    dist: D
     bar_labels: VGroup
+    avg_line: DashedLine
 
     def __init__(
         self,
@@ -38,6 +42,7 @@ class DiscreteDistributionHistogram[
         bar_colors: Sequence[ManimColor | str] = DEFAULT_BAR_COLORS,
         **kwargs: Any,
     ) -> None:
+        self.dist = dist
         bins: list[float] = [len(b) for b in dist.bins]
         super().__init__(
             bins,
@@ -46,11 +51,13 @@ class DiscreteDistributionHistogram[
             **kwargs,
         )
 
-    def change_distribution(self, dist: D, /, *, update_colors: bool = True) -> None:
-        bins: list[float] = [len(b) for b in dist.bins]
-        return self.change_bar_values(bins, update_colors=update_colors)
+    def pt(self, x: float, y: float, /) -> Point3D:
+        """Get the correct coordinates for a point in the graph."""
+        return self.coords_to_point(x + .5, y, 0)  # type: ignore
 
-    def add_bar_labels(self, /, *,
+    def add_bar_labels(
+        self,
+        /, *,
         color: ParsableManimColor | None = None,
         font_size: float = 24,
         buff: float = MED_SMALL_BUFF,
@@ -59,3 +66,11 @@ class DiscreteDistributionHistogram[
         self.bar_labels = self.get_bar_labels(color, font_size, buff, label_constructor)
         self.add(self.bar_labels)
         return self.bar_labels
+
+    def add_avg_line(self, /) -> DashedLine:
+        self.avg_line = DashedLine(
+            self.pt(self.dist.average, 0),
+            self.pt(self.dist.average, self.y_range[0]),
+        )
+        self.add(self.avg_line)
+        return self.avg_line
