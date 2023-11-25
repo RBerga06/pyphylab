@@ -81,3 +81,6 @@ class DiscreteDistributionHistogram[D: DiscreteDist[Any]](BarChart):
         ])
         self.add(self.expected_dots)
         return self.expected_dots
+
+
+__all__ = ["DEFAULT_BAR_COLORS", "DiscreteDistributionHistogram"]
