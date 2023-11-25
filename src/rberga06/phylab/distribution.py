@@ -79,7 +79,7 @@ class Dist[M: AnyMeasureLike](_DataSequence[M], Measure[float], Protocol):
     def expected(self, x: Range | None = None, /) -> float | tuple[float, ...]:
         if x is None:
             n = len(self.data)
-            return tuple([self.probability(r)*n for r in self.binsr])
+            return tuple([self.probability(r) * n for r in self.binsr])
         return self.probability(x) * len(self.data)
 
     @classmethod
@@ -96,7 +96,7 @@ class DiscreteDist[M: Measure[int] | int](Dist[M], Protocol):
 
     @override
     def probability(self, x: Range, /) -> float:
-        return sum(map(self.discrete_probability, range(int(ceil(x.left)), int(floor(x.right)))))
+        return sum(map(self.discrete_probability, range(int(ceil(x.left)), int(floor(x.right)) + 1)))
 
 
 
