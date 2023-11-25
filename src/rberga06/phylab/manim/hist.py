@@ -10,7 +10,7 @@ from manim.constants import MED_SMALL_BUFF
 from manim.mobject.types.vectorized_mobject import VMobject, VGroup
 from manim.mobject.text.tex_mobject import Tex
 from manim.utils.color import ParsableManimColor, manim_colors, ManimColor
-from ..measure import MeasureLike
+from ..measure import Measure, MeasureLike
 from ..distribution import DiscreteDist
 
 
@@ -25,7 +25,9 @@ DEFAULT_BAR_COLORS = (
 )
 
 
-class DiscreteDistributionHistogram[D: DiscreteDist[MeasureLike[int]]](BarChart):
+class DiscreteDistributionHistogram[
+    D: DiscreteDist[int] | DiscreteDist[Measure[int]] | DiscreteDist[MeasureLike[int]]
+](BarChart):
     bar_labels: VGroup
 
     def __init__(
