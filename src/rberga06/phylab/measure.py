@@ -1,13 +1,21 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# pyright: reportIncompatibleMethodOverride=false
 """Abstract measure."""
 from dataclasses import dataclass
-from typing import Any, Protocol, Self, cast, final, overload
+from typing import TYPE_CHECKING, Any, Protocol, Self, cast, final, overload
 
 
 class Measure[X: (float, int)](Protocol):
-    best:  X
-    delta: X
+    # --- X must be covariant --- #
+    if TYPE_CHECKING:
+        @property
+        def best(self, /) -> X: ...
+        @property
+        def delta(self, /) -> X: ...
+    else:
+        best:  X
+        delta: X
 
     @property
     def delta_rel(self, /) -> float:
@@ -107,9 +115,9 @@ class Datum[X: (float, int)](Measure[X]):
         return cls(best, delta_rel * best)
 
 
-type AnyMeasure = Measure[float] | Measure[int]
 type MeasureLike[X: (float, int)] = Measure[X] | X
-type AnyMeasureLike = MeasureLike[float] | MeasureLike[int]
+type AnyMeasure = Measure[float]
+type AnyMeasureLike = MeasureLike[float]
 
 
-__all__ = ["Measure", "AnyMeasure", "MeasureLike", "AnyMeasureLike", "Datum"]
+__all__ = ["Measure", "MeasureLike", "Datum"]
