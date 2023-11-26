@@ -39,9 +39,8 @@ class DiscreteDistributionHistogram[D: DiscreteDist[Any]](BarChart):
         /, *,
         x_start: int | None = None,
         x_stop:  int | None = None,
-        bar_names: Sequence[str] | None = None,
+        bar_names: Sequence[str] | Literal["auto"] | None = "auto",
         bar_colors: Sequence[ManimColor | str] = DEFAULT_BAR_COLORS,
-        bar_labels: Sequence[str] | Literal["auto"] | None = "auto",
         **kwargs: Any,
     ) -> None:
         self.dist = dist
@@ -54,13 +53,12 @@ class DiscreteDistributionHistogram[D: DiscreteDist[Any]](BarChart):
         else:
             if x_start is not None and x_stop is not None:
                 dbins = [(i, 0) for i in range(x_start, x_stop + 1)]
-        if bar_labels == "auto":
-            bar_labels = [str(b[0]) for b in dbins]
+        if bar_names == "auto":
+            bar_names = [str(b[0]) for b in dbins]
         super().__init__(
             [b[1] for b in dbins],
             bar_names=bar_names,
             bar_colors=bar_colors,  # type: ignore
-            bar_labels=bar_labels,
             **kwargs,
         )
 
