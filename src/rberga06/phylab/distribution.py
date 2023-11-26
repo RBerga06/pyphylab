@@ -97,9 +97,15 @@ class Dist[M: MeasureLike[float]](_DataSequence[M], Measure[float], Protocol):
         return self.probability(x) * len(self.data)
 
     @classmethod
-    def mk_iter_cumulative(cls, data: Iterable[M]) -> Iterator[Self]:
+    def mk_iter_cumulative(
+        cls,
+        data: Iterable[M],
+        /, *,
+        custom_bins_start: float | None = None,
+        custom_bins_stop:  float | None = None,
+    ) -> Iterator[Self]:
         for d in _cumulative(data):
-            yield cls(d)
+            yield cls(d, custom_bins_start=custom_bins_start, custom_bins_stop=custom_bins_stop)
 
 
 
