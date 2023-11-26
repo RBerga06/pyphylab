@@ -13,6 +13,8 @@ from .distribution import DiscreteDist
 @dataclass(slots=True, frozen=True)
 class Poisson[M: MeasureLike[int]](DiscreteDist[M]):
     data: Sequence[M]
+    custom_bins_start: float | None = None
+    custom_bins_stop:  float | None = None
 
     @property
     @override
