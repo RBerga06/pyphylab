@@ -68,7 +68,7 @@ class Dist[M: MeasureLike[float]](_DataSequence[M], Measure[float], Protocol):
     @property
     def bins_stop(self, /) -> float:
         if self.custom_bins_stop is None:
-            return min(map(best, self.data))
+            return max(map(best, self.data))
         return self.custom_bins_stop
 
     @property
