@@ -54,7 +54,7 @@ class DiscreteDistributionHistogram[D: DiscreteDist[Any]](BarChart):
 
     def pt(self, x: float, y: float, /) -> Point3D:
         """Get the correct coordinates for a point in the graph."""
-        return self.coords_to_point(x+.5, y, 0)  # type: ignore
+        return self.coords_to_point(x-self.dist.bins_start+.5, y, 0)  # type: ignore
 
     def add_bar_labels(
         self,
