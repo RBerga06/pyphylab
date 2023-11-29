@@ -1,24 +1,111 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 from dataclasses import dataclass
+from itertools import chain
 from math import ceil, floor
-from typing import Iterable, Iterator, Protocol, Self, Sequence, final, overload, override
-from .measure import Measure, MeasureLike
+from typing import Any, Callable, Iterable, Iterator, Protocol, Self, Sequence, final, overload, override
+from typing_extensions import deprecated
+from .measure import Measure, MeasureLike, best
 from .range import Range
+from .stats import ADataSet, DataSet
 
 
-def _cumulative[X](data: Iterable[X]) -> Iterator[tuple[X, ...]]:
+@final
+@dataclass(slots=True, frozen=True)
+class Bin[X: MeasureLike[float]](ADataSet[X]):
+    data: Sequence[X]  # pyright: ignore[reportIncompatibleMethodOverride]
+    left: float
+    center: float
+    right: float
+
+    @property
+    @override
+    def best(self, /) -> float:
+        return self.center
+
+    @override
+    def map[A: MeasureLike[float], B: MeasureLike[float]](self: "Bin[A]", f: Callable[[A], B], /) -> "DataSet[B]":
+        return DataSet(self.data).map(f)
+
+    @classmethod
+    def ranged(cls, data: Sequence[X], left: float, right: float, /) -> Self:
+        return cls(data, left, (left + right)/2, right)
+
+    @classmethod
+    def centered(cls, data: Sequence[X], center: float, delta: float, /) -> Self:
+        return cls(data, center - delta, center, center + delta)
+
+
+@final
+@dataclass(frozen=True, slots=True)
+class BinSet[X: MeasureLike[float]](ADataSet[float]):
+    bins: Sequence[Bin[X]]
+
+    @property
+    @override
+    def data(self, /) -> tuple[float, ...]:
+        return tuple(chain.from_iterable([[b.best]*b.n for b in self.bins]))
+
+    @property
+    @override
+    def n(self, /) -> int:
+        return len(self.data)
+
+    @override
+    def map[A: MeasureLike[float], B: MeasureLike[float]](self: "BinSet[A]", f: Callable[[float], B], /) -> "DataSet[B]":
+        return DataSet(self.data).map(f)
+
+
+@final
+@dataclass(frozen=True, slots=True)
+class DistFit[D: "Distribution[Any]", S: ADataSet[MeasureLike[float]], X: MeasureLike[float]]:
+    dist: D
+    data: S
+    bins: BinSet[X]
+
+
+class Distribution[T: float](Protocol):
+    """An (abstract) distribution."""
+
+    def pdf(self, x: T, /) -> float:
+        """The probability density function (PDF), evaluated at x."""
+        ...
+
+    def p(self, x1: T, x2: T, /) -> float:
+        """The probability of getting something between x1 and x2."""
+        ...
+
+    def p_worse(self, x: T, /) -> float:
+        """The probability of getting x, or worse."""
+        ...
+
+    def chauvenet(self, n: int, x: T, /) -> bool:
+        """Check if we can apply Chauvenet to x."""
+        return (n * self.p_worse(x)) < .5
+
+    def expected(self, n: int, x1: T, x2: T, /) -> float:
+        """The expected value between `x1` and `x2`."""
+        return self.p(x1, x2) * n
+
+    def sample(self, n: int, /) -> tuple[float, ...]:
+        """Return pseudo-random data with this distribution."""
+        raise NotImplementedError
+
+    @classmethod
+    def fit[S: ADataSet[MeasureLike[float]]](cls, data: S, /) -> DistFit[Self, S, MeasureLike[float]]:
+        """Find the distribution that best fits `data`."""
+        ...
+
+
+# --- OLD CODE BELOW ---
+
+
+def _cumulative[X](data: Iterable[X], /) -> Iterator[tuple[X, ...]]:
     cumul: tuple[X, ...] = ()
     yield cumul
     for x in data:
         cumul += (x,)
         yield cumul
-
-
-def best[X: (float, int)](x: MeasureLike[X], /) -> X:
-    if isinstance(x, float | int):
-        return x
-    return x.best
 
 
 class _DataSequence[M: MeasureLike[float]](Protocol):
@@ -37,6 +124,7 @@ class _DataSequence[M: MeasureLike[float]](Protocol):
 
 @final
 @dataclass(slots=True, frozen=True)
+@deprecated("Use `Bin` instead.")
 class DistBin[M: MeasureLike[float]](_DataSequence[M]):
     """A dynamic container for distribution bins."""
     dist: "Dist[M]"
@@ -53,9 +141,12 @@ class DistBin[M: MeasureLike[float]](_DataSequence[M]):
 
 
 
+@deprecated("Use `Distribution` instead.")
 class Dist[M: MeasureLike[float]](_DataSequence[M], Measure[float], Protocol):
     """An (abstract) distribution."""
     data: Sequence[M]
+
+    # --- Bins ---
     custom_bins_start: float | None = None
     custom_bins_stop:  float | None = None
 
@@ -72,11 +163,13 @@ class Dist[M: MeasureLike[float]](_DataSequence[M], Measure[float], Protocol):
         return self.custom_bins_stop
 
     @property
-    def binsr(self, /) -> Iterable[Range]: ...
+    def bins_ranges(self, /) -> Iterable[Range]: ...
 
     @property
     def bins(self, /) -> tuple[DistBin[M], ...]:
-        return tuple([DistBin(self, r) for r in self.binsr])
+        return tuple([DistBin(self, r) for r in self.bins_ranges])
+
+    # --- Statistics on data ---
 
     @property
     def average(self, /) -> float:
@@ -93,8 +186,13 @@ class Dist[M: MeasureLike[float]](_DataSequence[M], Measure[float], Protocol):
     def expected(self, x: Range | None = None, /) -> float | tuple[float, ...]:
         if x is None:
             n = len(self.data)
-            return tuple([self.probability(r) * n for r in self.binsr])
+            return tuple([self.probability(r) * n for r in self.bins_ranges])
         return self.probability(x) * len(self.data)
+
+    @property
+    def expected_avg(self, /) -> float:
+        expected = self.expected()
+        return sum(expected)/len(expected)
 
     @classmethod
     def mk_iter_cumulative(
@@ -109,6 +207,7 @@ class Dist[M: MeasureLike[float]](_DataSequence[M], Measure[float], Protocol):
 
 
 
+@deprecated("Use `Distribution` instead.")
 class DiscreteDist[M: Measure[int] | int](Dist[M], Protocol):
     """A discrete (abstract) distribution."""
 
@@ -117,7 +216,6 @@ class DiscreteDist[M: Measure[int] | int](Dist[M], Protocol):
     @override
     def probability(self, x: Range, /) -> float:
         return sum(map(self.discrete_probability, range(int(ceil(x.left)), int(floor(x.right)) + 1)))
-
 
 
 __all__ = ["DistBin", "Dist", "DiscreteDist"]
