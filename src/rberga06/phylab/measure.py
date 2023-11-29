@@ -120,4 +120,16 @@ type AnyMeasure = Measure[float]
 type AnyMeasureLike = MeasureLike[float]
 
 
-__all__ = ["Measure", "MeasureLike", "Datum"]
+def best[X: float](x: MeasureLike[X], /) -> X:
+    if isinstance(x, float | int):
+        return x
+    return x.best
+
+
+def delta[X: float](x: MeasureLike[X]) -> X:
+    if isinstance(x, float | int):
+        return cast(X, 0)
+    return x.delta
+
+
+__all__ = ["Measure", "MeasureLike", "Datum", "best", "delta"]
