@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """Poisson distribution."""
-from math import factorial, exp, sqrt
+from math import factorial, sqrt
 from dataclasses import dataclass
 from typing import Sequence, override
 
@@ -10,9 +10,15 @@ from .measure import MeasureLike
 from .distribution import DiscreteDist
 
 
+def binomial(n: int, k: int, /) -> int:
+    return factorial(n)//(factorial(k)*factorial(n-k))
+
+
 @dataclass(slots=True, frozen=True)
-class Poisson[M: MeasureLike[int]](DiscreteDist[M]):
+class Bernoulli[M: MeasureLike[int]](DiscreteDist[M]):
     data: Sequence[M]
+    p: float
+    n: int
     custom_bins_start: float | None = None
     custom_bins_stop:  float | None = None
 
@@ -25,12 +31,17 @@ class Poisson[M: MeasureLike[int]](DiscreteDist[M]):
 
     @property
     def sigma(self, /) -> float:
-        return sqrt(self.average)
+        return sqrt(self.n * self.p * (1 - self.p))
+
+    @property
+    @override
+    def expected_avg(self, /) -> float:
+        return self.p * self.n
 
     @property
     @override
     def best(self, /) -> float:  # pyright: ignore[reportIncompatibleVariableOverride]
-        return self.average
+        return self.expected_avg
 
     @property
     @override
@@ -39,8 +50,7 @@ class Poisson[M: MeasureLike[int]](DiscreteDist[M]):
 
     @override
     def discrete_probability(self, x: int, /) -> float:
-        µ = self.average
-        return (pow(µ, x) * exp(-µ))/factorial(x)
+        return binomial(self.n, x) * pow(self.p, x) * pow(1-self.p, self.n-x)
 
 
-__all__ = ["Poisson"]
+__all__ = ["Bernoulli"]
