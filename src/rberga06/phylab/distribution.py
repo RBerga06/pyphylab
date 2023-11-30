@@ -42,12 +42,18 @@ class Distribution[T: float](Protocol):
 
     def sample(self, n: int, /) -> tuple[float, ...]:
         """Return pseudo-random data with this distribution."""
-        raise NotImplementedError
+        raise NotImplementedError  # TODO: Implement this!
 
     @classmethod
     def fit[S: ADataSet[MeasureLike[float]]](cls, data: S, /) -> DistFit[Self, S, MeasureLike[float]]:
         """Find the distribution that best fits `data`."""
         ...
+
+
+class DiscreteDistribution(Distribution[int], Protocol):
+    @override
+    def p(self, x1: int, x2: int, /) -> float:
+        return sum([*map(self.pdf, range(x1, x2+1))])
 
 
 # --- OLD CODE BELOW ---
@@ -171,4 +177,4 @@ class DiscreteDist[M: Measure[int] | int](Dist[M], Protocol):
         return sum(map(self.discrete_probability, range(int(ceil(x.left)), int(floor(x.right)) + 1)))
 
 
-__all__ = ["DistBin", "Dist", "DiscreteDist"]
+__all__ = ["Distribution", "DiscreteDistribution"]
