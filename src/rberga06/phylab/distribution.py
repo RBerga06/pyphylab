@@ -1,59 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 from dataclasses import dataclass
-from itertools import chain
 from math import ceil, floor
-from typing import Any, Callable, Iterable, Iterator, Protocol, Self, Sequence, final, overload, override
+from typing import Any, Iterable, Iterator, Protocol, Self, Sequence, final, overload, override
 from typing_extensions import deprecated
 from .measure import Measure, MeasureLike, best
 from .range import Range
-from .stats import ADataSet, DataSet
-
-
-@final
-@dataclass(slots=True, frozen=True)
-class Bin[X: MeasureLike[float]](ADataSet[X]):
-    data: Sequence[X]  # pyright: ignore[reportIncompatibleMethodOverride]
-    left: float
-    center: float
-    right: float
-
-    @property
-    @override
-    def best(self, /) -> float:
-        return self.center
-
-    @override
-    def map[A: MeasureLike[float], B: MeasureLike[float]](self: "Bin[A]", f: Callable[[A], B], /) -> "DataSet[B]":
-        return DataSet(self.data).map(f)
-
-    @classmethod
-    def ranged(cls, data: Sequence[X], left: float, right: float, /) -> Self:
-        return cls(data, left, (left + right)/2, right)
-
-    @classmethod
-    def centered(cls, data: Sequence[X], center: float, delta: float, /) -> Self:
-        return cls(data, center - delta, center, center + delta)
-
-
-@final
-@dataclass(frozen=True, slots=True)
-class BinSet[X: MeasureLike[float]](ADataSet[float]):
-    bins: Sequence[Bin[X]]
-
-    @property
-    @override
-    def data(self, /) -> tuple[float, ...]:
-        return tuple(chain.from_iterable([[b.best]*b.n for b in self.bins]))
-
-    @property
-    @override
-    def n(self, /) -> int:
-        return len(self.data)
-
-    @override
-    def map[A: MeasureLike[float], B: MeasureLike[float]](self: "BinSet[A]", f: Callable[[float], B], /) -> "DataSet[B]":
-        return DataSet(self.data).map(f)
+from .bins import ADataSet, BinSet
 
 
 @final
@@ -61,7 +14,7 @@ class BinSet[X: MeasureLike[float]](ADataSet[float]):
 class DistFit[D: "Distribution[Any]", S: ADataSet[MeasureLike[float]], X: MeasureLike[float]]:
     dist: D
     data: S
-    bins: BinSet[X]
+    bins: BinSet[S, X]
 
 
 class Distribution[T: float](Protocol):

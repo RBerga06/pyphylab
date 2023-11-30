@@ -2,10 +2,10 @@
 # -*- coding: utf-8 -*-
 # pyright: reportIncompatibleMethodOverride=false
 # pyright: reportIncompatibleVariableOverride=false
-"""Data statistics"""
-from dataclasses import dataclass
+"""Abstract data sets & Descriptive statistics."""
 from math import sqrt
-from typing import TYPE_CHECKING, Callable, Iterator, Protocol, Self, Sequence, final, overload, override
+from typing import TYPE_CHECKING, Callable, Iterator, Protocol, Self, Sequence, overload, override
+
 from .measure import Measure, MeasureLike, best
 
 
@@ -74,6 +74,14 @@ class DataStats[X: MeasureLike[float]](AbstractStats, Protocol):
         return len(self.data)
 
     @property
+    def min(self, /) -> X:
+        return min(self.data, key=best)
+
+    @property
+    def max(self, /) -> X:
+        return max(self.data, key=best)
+
+    @property
     @override
     def sum(self, /) -> float:
         return sum(map(best, self.data))
@@ -103,15 +111,4 @@ class ADataSet[X: MeasureLike[float]](DataSequence[X], DataStats[X], Measure[flo
         return super().map(f)  # type: ignore
 
 
-@final
-@dataclass(slots=True, frozen=True)
-class DataSet[X: MeasureLike[float]](ADataSet[X]):
-    data: Sequence[X]
-
-    # We have to re-define this because we don't have HKTs.
-    @override
-    def map[A: MeasureLike[float], B: MeasureLike[float]](self: "DataSet[A]", f: Callable[[A], B], /) -> "DataSet[B]":
-        return super().map(f)  # type: ignore
-
-
-__all__ = ["DataSequence", "DataStats", "ADataSet", "DataSet"]
+__all__ = ["DataSequence", "DataStats", "ADataSet"]

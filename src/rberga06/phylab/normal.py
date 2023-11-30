@@ -1,16 +1,43 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """Normal distribution."""
-from math import erf, floor, sqrt
+from math import erf, exp, floor, sqrt, pi
 from dataclasses import dataclass
-from typing import Sequence, override
+from typing import Self, Sequence, final, override
+from typing_extensions import deprecated
 
+from .data import ADataSet
 from .range import Range
-from .measure import AnyMeasure
-from .distribution import Dist
+from .measure import AnyMeasure, MeasureLike
+from .distribution import Dist, Distribution, DistFit
+
+
+@final
+@dataclass(slots=True, frozen=True)
+class Gaussian(Distribution[float]):
+    average: float
+    sigma:   float
+
+    @override
+    def pdf(self, x: float) -> float:
+        return exp(-(((x-self.average)/self.sigma)**2)/2)/(sqrt(2*pi)*self.sigma)
+
+    @override
+    def p(self, x1: float, x2: float) -> float:
+        return (erf((x2-self.average)/self.sigma) - erf((x1-self.average)/self.sigma))/2
+
+    @override
+    def p_worse(self, x: float) -> float:
+        return 1 - erf(abs(x - self.average)/self.sigma)
+
+    @classmethod
+    @override
+    def fit[S: ADataSet[MeasureLike[float]]](cls, data: S, /, *, bins: int | None = None) -> DistFit[Self, S, MeasureLike[float]]:
+        return DistFit(cls(data.average, data.sigma), data, data.bins(bins))
 
 
 @dataclass(slots=True, frozen=True)
+@deprecated("Use `Gaussian` instead.")
 class Normal[M: AnyMeasure](Dist[M]):
     data: Sequence[M]
 
@@ -47,4 +74,4 @@ class Normal[M: AnyMeasure](Dist[M]):
         return Range("[", left.best - left.delta, right.best + right.delta, "]").split(self.nbins)
 
 
-__all__ = ["Normal"]
+__all__ = ["Gaussian"]
