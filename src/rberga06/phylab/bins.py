@@ -3,7 +3,7 @@
 """Split data into bins."""
 from dataclasses import dataclass
 from itertools import chain
-from math import floor
+from math import floor, sqrt
 from typing import Any, Callable, Protocol, Self, Sequence, final, override
 
 from .measure import MeasureLike, best
@@ -61,20 +61,34 @@ class BinSet[X: MeasureLike[float], D: _ADataSet[MeasureLike[float]]](_ADataSet[
 
 
 class ADataSet[X: MeasureLike[float]](_ADataSet[X], Protocol):
-    def bins(self, nbins: int, /) -> BinSet[X, Self]:
+    def bins(
+        self, nbins: int | None = None, /, *,
+        left:  float | None = None,
+        right: float | None = None,
+    ) -> BinSet[X, Self]:
         """Split `self` into `nbins` bins."""
+        if nbins is None:
+            nbins = int(floor(sqrt(self.n)))
+        if nbins <= 0:
+            return BinSet(self, ())
+        if left is None:
+            left = best(self.min)
+        if right is None:
+            right = best(self.max)
         # Create bins
-        min = best(self.min)
-        dx = (best(self.max) - min)/nbins
+        dx = (right - left)/nbins
         bins: list[list[X]] = [[] for _ in range(nbins)]
         # Populate bins
-        data: list[X] = sorted(self.data, key=best)
-        for x in data:
-            i = int(floor((best(x) - min)/dx))
-            if i == nbins:  # [...)[...)[...)[...] <- self.max is included in rightmost bin
-                i -= 1
+        for x in sorted(self.data, key=best):
+            if x == right:
+                i = nbins-1
+            else:
+                i = int(floor((best(x) - left)/dx))
+            if i < 0 or i >= nbins:
+                continue
             bins[i].append(x)
-        return BinSet(self, tuple([Bin.ranged(bin, min+i*dx, min+(i+1)*dx) for i, bin in enumerate(bins)]))
+        # Return the results
+        return BinSet(self, tuple([Bin.ranged(bin, left+i*dx, left+(i+1)*dx) for i, bin in enumerate(bins)]))
 
 
 __all__ = ["ADataSet"]
