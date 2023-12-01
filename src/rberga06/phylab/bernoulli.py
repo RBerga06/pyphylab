@@ -3,11 +3,13 @@
 """Poisson distribution."""
 from math import factorial, sqrt
 from dataclasses import dataclass
-from typing import Sequence, override
+from typing import Self, Sequence, override
+
+from .bins import ADataSet
 
 from .range import Range
 from .measure import MeasureLike
-from .distribution import DiscreteDist
+from .distribution import DiscreteDist, DiscreteDistribution, DistFit
 
 
 def binomial(n: int, k: int, /) -> int:
@@ -15,7 +17,42 @@ def binomial(n: int, k: int, /) -> int:
 
 
 @dataclass(slots=True, frozen=True)
-class Bernoulli[M: MeasureLike[int]](DiscreteDist[M]):
+class Bernoulli(DiscreteDistribution):
+    n: int
+    n_trials:  int
+    p_success: float
+
+    @property
+    @override
+    def variance(self, /) -> float:
+        return self.n_trials * self.p_success * (1 - self.p_success)
+
+    @property
+    @override
+    def average(self, /) -> float:
+        return self.p_success * self.n_trials
+
+    @override
+    def pdf(self, x: int) -> float:
+        n, p = self.n_trials, self.p_success
+        return binomial(n, x) * pow(p, x) * pow(1-p, n-x)
+
+    @override
+    def p_worse(self, x: int, /) -> float:
+        raise NotImplementedError  # TODO: Implement this
+
+    @classmethod
+    @override
+    def fit[S: ADataSet[MeasureLike[int]]](  # pyright: ignore[reportIncompatibleMethodOverride]
+        cls, data: S, /, *,
+        n_trials: int,
+        p_success: float
+    ) -> DistFit[Self, S]:
+        return DistFit(cls(data.n, n_trials, p_success), data)
+
+
+@dataclass(slots=True, frozen=True)
+class OldBernoulli[M: MeasureLike[int]](DiscreteDist[M]):
     data: Sequence[M]
     p: float
     n: int
@@ -53,4 +90,4 @@ class Bernoulli[M: MeasureLike[int]](DiscreteDist[M]):
         return binomial(self.n, x) * pow(self.p, x) * pow(1-self.p, self.n-x)
 
 
-__all__ = ["Bernoulli"]
+__all__ = ["OldBernoulli"]
