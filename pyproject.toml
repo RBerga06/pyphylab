@@ -1,6 +1,6 @@
 [project]
 name = "rberga06-phylab"
-version = "0.1.0"
+version = "1.0.0a0"
 description = "A small Python library for random daily use in the Physics laboratory"
 authors = [
     {name = "RBerga06", email = "78449715+RBerga06@users.noreply.github.com"},
