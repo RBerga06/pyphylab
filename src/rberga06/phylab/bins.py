@@ -90,5 +90,10 @@ class ADataSet[X: MeasureLike[float]](_ADataSet[X], Protocol):
         # Return the results
         return BinSet(self, tuple([Bin.ranged(bin, left+i*dx, left+(i+1)*dx) for i, bin in enumerate(bins)]))
 
+    def intbins[T: MeasureLike[int]](self: "ADataSet[T]", /) -> BinSet[T, "ADataSet[T]"]:
+        """Split `self` (integer data set) into bins."""
+        max, min = best(self.max), best(self.min)
+        return self.bins(max+1-min, left=min-.5, right=max+.5)
+
 
 __all__ = ["ADataSet"]
