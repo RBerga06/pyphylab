@@ -59,6 +59,10 @@ class AbstractStats(Protocol):
     def sigma(self, /) -> float:
         return sqrt(self.variance)
 
+    @property
+    def sigma_avg(self, /) -> float:
+        return self.sigma/sqrt(self.n)
+
 
 class DataStats[X: MeasureLike[float]](AbstractStats, Protocol):
     """Statistics on data."""
@@ -103,7 +107,7 @@ class ADataSet[X: MeasureLike[float]](DataSequence[X], DataStats[X], Measure[flo
     @property
     @override
     def delta(self, /) -> float:
-        return self.sigma/sqrt(self.n)
+        return self.sigma_avg
 
     # We have to re-define this because we don't have HKTs.
     @override
