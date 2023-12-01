@@ -32,8 +32,8 @@ class Gaussian(Distribution[float]):
 
     @classmethod
     @override
-    def fit[S: ADataSet[MeasureLike[float]]](cls, data: S, /, *, bins: int | None = None) -> DistFit[Self, S, MeasureLike[float]]:
-        return DistFit(cls(data.average, data.sigma), data, data.bins(bins))
+    def fit[S: ADataSet[MeasureLike[float]]](cls, data: S, /) -> DistFit[Self, S]:
+        return DistFit(cls(data.average, data.sigma), data)
 
 
 @dataclass(slots=True, frozen=True)

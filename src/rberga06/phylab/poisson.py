@@ -3,15 +3,35 @@
 """Poisson distribution."""
 from math import factorial, exp, sqrt
 from dataclasses import dataclass
-from typing import Sequence, override
+from typing import Self, Sequence, override
+from typing_extensions import deprecated
 
 from .range import Range
 from .measure import MeasureLike
-from .distribution import DiscreteDist
+from .distribution import DiscreteDist, DiscreteDistribution, ADataSet, DistFit
 
 
 @dataclass(slots=True, frozen=True)
-class Poisson[M: MeasureLike[int]](DiscreteDist[M]):
+class Poisson(DiscreteDistribution):
+    average: float
+
+    @override
+    def pdf(self, x: int) -> float:
+        return (pow(self.average, x) * exp(-self.average))/factorial(x)
+
+    @override
+    def p_worse(self, x: int, /) -> float:
+        raise NotImplementedError  # TODO: Implement this
+
+    @classmethod
+    @override
+    def fit[S: ADataSet[MeasureLike[int]]](cls, data: S, /) -> DistFit[Self, S]:  # pyright: ignore[reportIncompatibleMethodOverride]
+        return DistFit(cls(data.average), data)
+
+
+@deprecated("Use `Poisson` instead.")
+@dataclass(slots=True, frozen=True)
+class OldPoisson[M: MeasureLike[int]](DiscreteDist[M]):
     data: Sequence[M]
     custom_bins_start: float | None = None
     custom_bins_stop:  float | None = None

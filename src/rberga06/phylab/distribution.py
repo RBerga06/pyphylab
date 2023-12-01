@@ -6,15 +6,14 @@ from typing import Any, Iterable, Iterator, Protocol, Self, Sequence, final, ove
 from typing_extensions import deprecated
 from .measure import Measure, MeasureLike, best
 from .range import Range
-from .bins import ADataSet, BinSet
+from .data import ADataSet
 
 
 @final
 @dataclass(frozen=True, slots=True)
-class DistFit[D: "Distribution[Any]", S: ADataSet[MeasureLike[float]], X: MeasureLike[float]]:
+class DistFit[D: "Distribution[Any]", S: ADataSet[MeasureLike[float]]]:
     dist: D
     data: S
-    bins: BinSet[S, X]
 
 
 class Distribution[T: float](Protocol):
@@ -45,7 +44,7 @@ class Distribution[T: float](Protocol):
         raise NotImplementedError  # TODO: Implement this!
 
     @classmethod
-    def fit[S: ADataSet[MeasureLike[float]]](cls, data: S, /) -> DistFit[Self, S, MeasureLike[float]]:
+    def fit[S: ADataSet[MeasureLike[float]]](cls, data: S, /) -> DistFit[Self, S]:
         """Find the distribution that best fits `data`."""
         ...
 
