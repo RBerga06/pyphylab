@@ -36,6 +36,10 @@ class Bin[X: MeasureLike[float]](_ADataSet[X]):
     def centered(cls, data: Sequence[X], center: float, delta: float, /) -> Self:
         return cls(data, center - delta, center, center + delta)
 
+    @override
+    def __repr__(self, /) -> str:
+        return f"<Bin: [{self.left}, {self.right}], n={self.n}>"
+
 
 @final
 @dataclass(frozen=True, slots=True)
