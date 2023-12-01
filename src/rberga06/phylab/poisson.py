@@ -13,7 +13,13 @@ from .distribution import DiscreteDist, DiscreteDistribution, ADataSet, DistFit
 
 @dataclass(slots=True, frozen=True)
 class Poisson(DiscreteDistribution):
-    average: float
+    n: int
+    average: float  # pyright: ignore[reportIncompatibleMethodOverride]
+
+    @property
+    @override
+    def variance(self, /) -> float:
+        return self.average
 
     @override
     def pdf(self, x: int) -> float:
@@ -26,7 +32,7 @@ class Poisson(DiscreteDistribution):
     @classmethod
     @override
     def fit[S: ADataSet[MeasureLike[int]]](cls, data: S, /) -> DistFit[Self, S]:  # pyright: ignore[reportIncompatibleMethodOverride]
-        return DistFit(cls(data.average), data)
+        return DistFit(cls(data.n, data.average), data)
 
 
 @deprecated("Use `Poisson` instead.")

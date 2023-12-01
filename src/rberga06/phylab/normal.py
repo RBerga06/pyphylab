@@ -15,25 +15,36 @@ from .distribution import Dist, Distribution, DistFit
 @final
 @dataclass(slots=True, frozen=True)
 class Gaussian(Distribution[float]):
-    average: float
-    sigma:   float
+    n: int
+    µ: float
+    s: float
+
+    @property
+    @override
+    def average(self, /) -> float:
+        return self.µ
+
+    @property
+    @override
+    def variance(self, /) -> float:
+        return self.s ** 2
 
     @override
     def pdf(self, x: float) -> float:
-        return exp(-(((x-self.average)/self.sigma)**2)/2)/(sqrt(2*pi)*self.sigma)
+        return exp(-(((x-self.µ)/self.s)**2)/2)/(sqrt(2*pi)*self.s)
 
     @override
     def p(self, x1: float, x2: float) -> float:
-        return (erf((x2-self.average)/self.sigma) - erf((x1-self.average)/self.sigma))/2
+        return (erf((x2-self.µ)/self.s) - erf((x1-self.µ)/self.s))/2
 
     @override
     def p_worse(self, x: float) -> float:
-        return 1 - erf(abs(x - self.average)/self.sigma)
+        return 1 - erf(abs(x - self.µ)/self.s)
 
     @classmethod
     @override
     def fit[S: ADataSet[MeasureLike[float]]](cls, data: S, /) -> DistFit[Self, S]:
-        return DistFit(cls(data.average, data.sigma), data)
+        return DistFit(cls(data.n, data.average, data.sigma), data)
 
 
 @dataclass(slots=True, frozen=True)
