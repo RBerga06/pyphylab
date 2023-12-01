@@ -6,7 +6,7 @@ from typing import Any, Iterable, Iterator, Protocol, Self, Sequence, final, ove
 from typing_extensions import deprecated
 from .measure import Measure, MeasureLike, best
 from .range import Range
-from .data import ADataSet
+from .data import ADataSet, AbstractStats
 
 
 @final
@@ -16,8 +16,29 @@ class DistFit[D: "Distribution[Any]", S: ADataSet[MeasureLike[float]]]:
     data: S
 
 
-class Distribution[T: float](Protocol):
+class Distribution[T: float](AbstractStats, Measure[T], Protocol):
     """An (abstract) distribution."""
+    n: int
+
+    @property
+    @override
+    def average(self, /) -> float:
+        ...
+
+    @property
+    @override
+    def sum(self, /) -> int:
+        return self.n
+
+    @property
+    @override
+    def best(self, /) -> float:
+        return self.average
+
+    @property
+    @override
+    def delta(self, /) -> float:
+        return self.sigma_avg
 
     def pdf(self, x: T, /) -> float:
         """The probability density function (PDF), evaluated at x."""
@@ -31,13 +52,13 @@ class Distribution[T: float](Protocol):
         """The probability of getting x, or worse."""
         ...
 
-    def chauvenet(self, n: int, x: T, /) -> bool:
+    def chauvenet(self, x: T, /) -> bool:
         """Check if we can apply Chauvenet to x."""
-        return (n * self.p_worse(x)) < .5
+        return (self.n * self.p_worse(x)) < .5
 
-    def expected(self, n: int, x1: T, x2: T, /) -> float:
+    def expected(self, x1: T, x2: T, /) -> float:
         """The expected value between `x1` and `x2`."""
-        return self.p(x1, x2) * n
+        return self.p(x1, x2) * self.n
 
     def sample(self, n: int, /) -> tuple[float, ...]:
         """Return pseudo-random data with this distribution."""
