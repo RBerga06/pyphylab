@@ -5,10 +5,9 @@ from math import factorial, sqrt
 from dataclasses import dataclass
 from typing import Self, Sequence, override
 
-from .bins import ADataSet
 from .range import Range
 from .measure import MeasureLike
-from .distribution import OldDiscreteDist, DiscreteDistribution, DistributionFit
+from .distribution import OldDiscreteDist, DiscreteDistribution, DistributionFit, ADataSet
 
 
 def binomial(n: int, k: int, /) -> int:
