@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from math import ceil, floor
 from typing import Any, Iterable, Iterator, Protocol, Self, Sequence, final, overload, override
 from typing_extensions import deprecated
+
 from .measure import Measure, MeasureLike, best
 from .range import Range
 from .data import ADataSet, AbstractStats
@@ -44,11 +45,11 @@ class Distribution[T: float](AbstractStats, Measure[T], Protocol):
         """The probability density function (PDF), evaluated at x."""
         ...
 
-    def p(self, x1: T, x2: T, /) -> float:
+    def p(self, x1: float, x2: float, /) -> float:
         """The probability of getting something between x1 and x2."""
         ...
 
-    def p_worse(self, x: T, /) -> float:
+    def p_worse(self, x: float, /) -> float:
         """The probability of getting x, or worse."""
         ...
 
@@ -56,9 +57,16 @@ class Distribution[T: float](AbstractStats, Measure[T], Protocol):
         """Check if we can apply Chauvenet to x."""
         return (self.n * self.p_worse(x)) < .5
 
-    def expected(self, x1: T, x2: T, /) -> float:
+    def expected(self, x1: float, x2: float, /) -> float:
         """The expected value between `x1` and `x2`."""
         return self.p(x1, x2) * self.n
+
+    def bins(self, nbins: int, left: float, right: float, /) -> tuple[float, ...]:
+        step = (right - left)/nbins
+        return tuple([self.expected(left+i*step, left+(i+1)*step) for i in range(nbins+1)])
+
+    def intbins(self, left: int, right: int, /) -> tuple[float, ...]:
+        return self.bins(right+1-left, left, right+1)
 
     def sample(self, n: int, /) -> tuple[float, ...]:
         """Return pseudo-random data with this distribution."""
@@ -72,8 +80,8 @@ class Distribution[T: float](AbstractStats, Measure[T], Protocol):
 
 class DiscreteDistribution(Distribution[int], Protocol):
     @override
-    def p(self, x1: int, x2: int, /) -> float:
-        return sum([*map(self.pdf, range(x1, x2+1))])
+    def p(self, x1: float, x2: float, /) -> float:
+        return sum([*map(self.pdf, range(int(ceil(x1)), int(floor(x2))+1))])
 
 
 # --- OLD CODE BELOW ---

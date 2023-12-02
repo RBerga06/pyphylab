@@ -26,7 +26,7 @@ class Poisson(DiscreteDistribution):
         return (pow(self.average, x) * exp(-self.average))/factorial(x)
 
     @override
-    def p_worse(self, x: int, /) -> float:
+    def p_worse(self, x: float, /) -> float:
         raise NotImplementedError  # TODO: Implement this
 
     @classmethod
