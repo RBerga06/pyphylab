@@ -12,7 +12,8 @@ from .data import ADataSet, AbstractStats
 
 @final
 @dataclass(frozen=True, slots=True)
-class DistFit[D: "Distribution[Any]", S: ADataSet[MeasureLike[float]]]:
+class DistributionFit[D: "Distribution[Any]", S: ADataSet[MeasureLike[float]]]:
+    """A container for distribution fit results."""
     dist: D
     data: S
 
@@ -73,7 +74,7 @@ class Distribution[T: float](AbstractStats, Measure[T], Protocol):
         raise NotImplementedError  # TODO: Implement this!
 
     @classmethod
-    def fit[S: ADataSet[MeasureLike[float]]](cls, data: S, /) -> DistFit[Self, S]:
+    def fit[S: ADataSet[MeasureLike[float]]](cls, data: S, /) -> DistributionFit[Self, S]:
         """Find the distribution that best fits `data`."""
         ...
 
@@ -82,6 +83,9 @@ class DiscreteDistribution(Distribution[int], Protocol):
     @override
     def p(self, x1: float, x2: float, /) -> float:
         return sum([*map(self.pdf, range(int(ceil(x1)), int(floor(x2))+1))])
+
+
+__all__ = ["DistributionFit", "Distribution", "DiscreteDistribution"]
 
 
 # --- OLD CODE BELOW ---
@@ -114,7 +118,7 @@ class _DataSequence[M: MeasureLike[float]](Protocol):
 @deprecated("Use `Bin` instead.")
 class DistBin[M: MeasureLike[float]](_DataSequence[M]):
     """A dynamic container for distribution bins."""
-    dist: "Dist[M]"
+    dist: "OldDistribution[M]"
     r: Range
 
     @property
@@ -129,7 +133,7 @@ class DistBin[M: MeasureLike[float]](_DataSequence[M]):
 
 
 @deprecated("Use `Distribution` instead.")
-class Dist[M: MeasureLike[float]](_DataSequence[M], Measure[float], Protocol):
+class OldDistribution[M: MeasureLike[float]](_DataSequence[M], Measure[float], Protocol):
     """An (abstract) distribution."""
     data: Sequence[M]
 
@@ -194,8 +198,8 @@ class Dist[M: MeasureLike[float]](_DataSequence[M], Measure[float], Protocol):
 
 
 
-@deprecated("Use `Distribution` instead.")
-class DiscreteDist[M: Measure[int] | int](Dist[M], Protocol):
+@deprecated("Use `DiscreteDistribution` instead.")
+class OldDiscreteDist[M: Measure[int] | int](OldDistribution[M], Protocol):
     """A discrete (abstract) distribution."""
 
     def discrete_probability(self, x: int, /) -> float: ...
@@ -203,6 +207,3 @@ class DiscreteDist[M: Measure[int] | int](Dist[M], Protocol):
     @override
     def probability(self, x: Range, /) -> float:
         return sum(map(self.discrete_probability, range(int(ceil(x.left)), int(floor(x.right)) + 1)))
-
-
-__all__ = ["Distribution", "DiscreteDistribution"]

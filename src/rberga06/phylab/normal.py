@@ -8,8 +8,8 @@ from typing_extensions import deprecated
 
 from .data import ADataSet
 from .range import Range
-from .measure import AnyMeasure, MeasureLike
-from .distribution import Dist, Distribution, DistFit
+from .measure import Measure, MeasureLike
+from .distribution import OldDistribution, Distribution, DistributionFit
 
 
 @final
@@ -43,13 +43,13 @@ class Gaussian(Distribution[float]):
 
     @classmethod
     @override
-    def fit[S: ADataSet[MeasureLike[float]]](cls, data: S, /) -> DistFit[Self, S]:
-        return DistFit(cls(data.n, data.average, data.sigma), data)
+    def fit[S: ADataSet[MeasureLike[float]]](cls, data: S, /) -> DistributionFit[Self, S]:
+        return DistributionFit(cls(data.n, data.average, data.sigma), data)
 
 
 @dataclass(slots=True, frozen=True)
 @deprecated("Use `Gaussian` instead.")
-class Normal[M: AnyMeasure](Dist[M]):
+class Normal[M: Measure[float]](OldDistribution[M]):
     data: Sequence[M]
 
     @property

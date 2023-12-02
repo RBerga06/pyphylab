@@ -103,4 +103,4 @@ class ADataSet[X: MeasureLike[float]](_ADataSet[X], Protocol):
         return self.bins(max+1-min, left=min-.5, right=max+.5)
 
 
-__all__ = ["ADataSet"]
+__all__ = ["Bin", "BinSet", "AnyBinSet", "ADataSet"]

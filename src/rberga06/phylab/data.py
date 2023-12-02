@@ -115,4 +115,4 @@ class ADataSet[X: MeasureLike[float]](DataSequence[X], DataStats[X], Measure[flo
         return super().map(f)  # type: ignore
 
 
-__all__ = ["DataSequence", "DataStats", "ADataSet"]
+__all__ = ["DataSequence", "AbstractStats", "DataStats", "ADataSet"]

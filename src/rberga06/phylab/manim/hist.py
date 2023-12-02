@@ -15,7 +15,7 @@ from manim.utils.color import ParsableManimColor, manim_colors, ManimColor
 
 from ..measure import MeasureLike, best
 from ..bins import AnyBinSet
-from ..distribution import DistFit, DiscreteDistribution
+from ..distribution import DistributionFit, DiscreteDistribution
 
 
 DEFAULT_BAR_COLORS = (
@@ -29,7 +29,7 @@ DEFAULT_BAR_COLORS = (
 )
 
 
-class DiscreteDistributionFitHistogram[F: DistFit[DiscreteDistribution, AnyBinSet[MeasureLike[int]]]](BarChart):
+class DiscreteDistributionFitHistogram[F: DistributionFit[DiscreteDistribution, AnyBinSet[MeasureLike[int]]]](BarChart):
     y_range: tuple[float, float, float]
     fit: F
     bar_labels: VGroup

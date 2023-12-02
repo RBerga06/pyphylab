@@ -8,7 +8,7 @@ from typing_extensions import deprecated
 
 from .range import Range
 from .measure import MeasureLike
-from .distribution import DiscreteDist, DiscreteDistribution, ADataSet, DistFit
+from .distribution import OldDiscreteDist, DiscreteDistribution, ADataSet, DistributionFit
 
 
 @dataclass(slots=True, frozen=True)
@@ -31,13 +31,13 @@ class Poisson(DiscreteDistribution):
 
     @classmethod
     @override
-    def fit[S: ADataSet[MeasureLike[int]]](cls, data: S, /) -> DistFit[Self, S]:  # pyright: ignore[reportIncompatibleMethodOverride]
-        return DistFit(cls(data.n, data.average), data)
+    def fit[S: ADataSet[MeasureLike[int]]](cls, data: S, /) -> DistributionFit[Self, S]:  # pyright: ignore[reportIncompatibleMethodOverride]
+        return DistributionFit(cls(data.n, data.average), data)
 
 
 @deprecated("Use `Poisson` instead.")
 @dataclass(slots=True, frozen=True)
-class OldPoisson[M: MeasureLike[int]](DiscreteDist[M]):
+class OldPoisson[M: MeasureLike[int]](OldDiscreteDist[M]):
     data: Sequence[M]
     custom_bins_start: float | None = None
     custom_bins_stop:  float | None = None

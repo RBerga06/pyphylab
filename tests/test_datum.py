@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """Tests for rberga06.phylab.measure"""
-from rberga06.phylab.measure import AnyMeasure, Datum
+from rberga06.phylab.measure import Measure, Datum
 
 EQ_THRESHOLD = 1e-20
 
 
 class TestDatum:
-    def eq(self, x: AnyMeasure, y: AnyMeasure, /) -> None:
+    def eq(self, x: Measure[float], y: Measure[float], /) -> None:
         assert (x.delta - y.delta) <= EQ_THRESHOLD
         assert (x - y).best <= EQ_THRESHOLD
 

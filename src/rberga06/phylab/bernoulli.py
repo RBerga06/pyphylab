@@ -6,10 +6,9 @@ from dataclasses import dataclass
 from typing import Self, Sequence, override
 
 from .bins import ADataSet
-
 from .range import Range
 from .measure import MeasureLike
-from .distribution import DiscreteDist, DiscreteDistribution, DistFit
+from .distribution import OldDiscreteDist, DiscreteDistribution, DistributionFit
 
 
 def binomial(n: int, k: int, /) -> int:
@@ -47,12 +46,12 @@ class Bernoulli(DiscreteDistribution):
         cls, data: S, /, *,
         n_trials: int,
         p_success: float
-    ) -> DistFit[Self, S]:
-        return DistFit(cls(data.n, n_trials, p_success), data)
+    ) -> DistributionFit[Self, S]:
+        return DistributionFit(cls(data.n, n_trials, p_success), data)
 
 
 @dataclass(slots=True, frozen=True)
-class OldBernoulli[M: MeasureLike[int]](DiscreteDist[M]):
+class OldBernoulli[M: MeasureLike[int]](OldDiscreteDist[M]):
     data: Sequence[M]
     p: float
     n: int
@@ -90,4 +89,4 @@ class OldBernoulli[M: MeasureLike[int]](DiscreteDist[M]):
         return binomial(self.n, x) * pow(self.p, x) * pow(1-self.p, self.n-x)
 
 
-__all__ = ["OldBernoulli"]
+__all__ = ["Bernoulli"]

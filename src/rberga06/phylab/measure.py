@@ -116,8 +116,6 @@ class Datum[X: (float, int)](Measure[X]):
 
 
 type MeasureLike[X: (float, int)] = Measure[X] | X
-type AnyMeasure = Measure[float]
-type AnyMeasureLike = MeasureLike[float]
 
 
 def best[X: float](x: MeasureLike[X], /) -> X:

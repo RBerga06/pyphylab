@@ -1,8 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """Physics constants."""
-import math
-from .measure import Datum
+# Imports are '_'-prefixed to avoid auto exporting
+#   (__all__ is not defined, since we might define several constants).
+import math as _m
+from .measure import Datum as _Datum
 
-π = Datum(math.pi, 0)
-g = Datum(9.806, 0.001)
+# Mathematical constants
+g = _Datum(9.806, 0.001)
+π = _m.pi
+# Physical constants
+ln2 = _m.log(2)
