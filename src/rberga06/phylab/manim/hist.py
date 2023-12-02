@@ -13,7 +13,7 @@ from manim.mobject.text.tex_mobject import Tex
 from manim.mobject.geometry.line import DashedLine
 from manim.utils.color import ParsableManimColor, manim_colors, ManimColor
 
-from ..measure import MeasureLike, best
+from ..measure import MeasureLike
 from ..bins import AnyBinSet
 from ..distribution import DistributionFit, DiscreteDistribution
 
@@ -57,7 +57,11 @@ class DiscreteDistributionFitHistogram[F: DistributionFit[DiscreteDistribution, 
 
     @property
     def fit_dist_bins(self, /) -> tuple[float, ...]:
-        return self.fit.dist.bins(len(self.fit.data.bins), self.fit.data.bins[0].left, self.fit.data.bins[-1].right)
+        return self.fit.dist.bins(
+            len(self.fit.data.bins),
+            self.fit.data.bins[ 0].left,
+            self.fit.data.bins[-1].right,
+        )
 
     def pt(self, x: float, y: float, /) -> Point3D:
         """Get the correct coordinates for a point in the graph."""
