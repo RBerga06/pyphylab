@@ -12,7 +12,10 @@ from manim.mobject.types.vectorized_mobject import VMobject, VGroup
 from manim.mobject.text.tex_mobject import Tex
 from manim.mobject.geometry.line import DashedLine
 from manim.utils.color import ParsableManimColor, manim_colors, ManimColor
-from ..distribution import DiscreteDist
+
+from ..measure import MeasureLike, best
+from ..bins import AnyBinSet
+from ..distribution import DistFit, DiscreteDistribution
 
 
 DEFAULT_BAR_COLORS = (
@@ -26,23 +29,23 @@ DEFAULT_BAR_COLORS = (
 )
 
 
-class DiscreteDistributionHistogram[D: DiscreteDist[Any]](BarChart):
+class DiscreteDistributionFitHistogram[F: DistFit[DiscreteDistribution, AnyBinSet[MeasureLike[int]]]](BarChart):
     y_range: tuple[float, float, float]
-    dist: D
+    fit: F
     bar_labels: VGroup
     avg_line: DashedLine
     expected_dots: VGroup
 
     def __init__(
         self,
-        dist: D,
+        fit: F,
         /, *,
         bar_names: Sequence[str] | Literal["auto"] | None = "auto",
         bar_colors: Sequence[ManimColor | str] = DEFAULT_BAR_COLORS,
         **kwargs: Any,
     ) -> None:
-        self.dist = dist
-        dbins: list[tuple[int, float]] = [(int(b.center), len(b)) for b in dist.bins]
+        self.fit = fit
+        dbins: list[tuple[int, float]] = [(int(b.center), len(b)) for b in fit.data.bins]
         if bar_names == "auto":
             bar_names = [str(b[0]) for b in dbins]
         super().__init__(
@@ -51,6 +54,10 @@ class DiscreteDistributionHistogram[D: DiscreteDist[Any]](BarChart):
             bar_colors=bar_colors,  # type: ignore
             **kwargs,
         )
+
+    @property
+    def fit_dist_bins(self, /) -> tuple[float, ...]:
+        return self.fit.dist.intbins(best(self.fit.data.min), best(self.fit.data.max))
 
     def pt(self, x: float, y: float, /) -> Point3D:
         """Get the correct coordinates for a point in the graph."""
@@ -70,8 +77,8 @@ class DiscreteDistributionHistogram[D: DiscreteDist[Any]](BarChart):
 
     def add_avg_line(self, /) -> DashedLine:
         self.avg_line = DashedLine(
-            self.pt(self.dist.average, 0),
-            self.pt(self.dist.average, self.y_range[1]),
+            self.pt(self.fit.dist.average, 0),
+            self.pt(self.fit.dist.average, self.y_range[1]),
         )
         self.add(self.avg_line)
         return self.avg_line
@@ -79,10 +86,10 @@ class DiscreteDistributionHistogram[D: DiscreteDist[Any]](BarChart):
     def add_expected_dots(self, /) -> VGroup:
         self.expected_dots = VGroup(*[
             Circle(DEFAULT_DOT_RADIUS).move_to(self.pt(i, h))
-            for i, h in enumerate(self.dist.expected())
+            for i, h in enumerate(self.fit_dist_bins)
         ])
         self.add(self.expected_dots)
         return self.expected_dots
 
 
-__all__ = ["DEFAULT_BAR_COLORS", "DiscreteDistributionHistogram"]
+__all__ = ["DEFAULT_BAR_COLORS", "DiscreteDistributionFitHistogram"]
