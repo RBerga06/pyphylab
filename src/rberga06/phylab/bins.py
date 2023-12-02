@@ -64,6 +64,9 @@ class BinSet[X: MeasureLike[float], D: _ADataSet[MeasureLike[float]]](_ADataSet[
         return DataSet(self.data).map(f)
 
 
+type AnyBinSet[X: MeasureLike[float]] = BinSet[X, _ADataSet[X]]
+
+
 class ADataSet[X: MeasureLike[float]](_ADataSet[X], Protocol):
     def bins(
         self, nbins: int | None = None, /, *,
