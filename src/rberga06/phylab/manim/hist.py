@@ -57,11 +57,11 @@ class DiscreteDistributionFitHistogram[F: DistributionFit[DiscreteDistribution, 
 
     @property
     def fit_dist_bins(self, /) -> tuple[float, ...]:
-        return self.fit.dist.intbins(best(self.fit.data.min), best(self.fit.data.max))
+        return self.fit.dist.bins(self.fit.data.bins[0].left, self.fit.data.bins[-1].right)
 
     def pt(self, x: float, y: float, /) -> Point3D:
         """Get the correct coordinates for a point in the graph."""
-        return self.coords_to_point(x-self.dist.bins_start+.5, y, 0)  # type: ignore
+        return self.coords_to_point(x-self.fit.data.bins[0].center+.5, y, 0)  # type: ignore
 
     def add_bar_labels(
         self,
