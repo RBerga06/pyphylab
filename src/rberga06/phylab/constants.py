@@ -7,7 +7,8 @@ import math as _m
 from .measure import Datum as _Datum
 
 # Mathematical constants
-g = _Datum(9.806, 0.001)
+ln2 = _m.log(2)
 π = _m.pi
 # Physical constants
-ln2 = _m.log(2)
+g = _Datum(9.806, 0.001)
+avogadro = 6.02214076e23
