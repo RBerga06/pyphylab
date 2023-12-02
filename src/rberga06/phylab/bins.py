@@ -29,11 +29,11 @@ class Bin[X: MeasureLike[float]](_ADataSet[X]):
         return dataset(self.data).map(f)
 
     @classmethod
-    def ranged(cls, data: Sequence[X], left: float, right: float, /) -> Self:
+    def ranged[Y: MeasureLike[float]](cls: type["Bin[Y]"], data: Sequence[Y], left: float, right: float, /) -> "Bin[Y]":
         return cls(data, left, (left + right)/2, right)
 
     @classmethod
-    def centered(cls, data: Sequence[X], center: float, delta: float, /) -> Self:
+    def centered[Y: MeasureLike[float]](cls: type["Bin[Y]"], data: Sequence[Y], center: float, delta: float, /) -> "Bin[Y]":
         return cls(data, center - delta, center, center + delta)
 
     @override
