@@ -62,7 +62,7 @@ class Distribution[T: float](AbstractStats, Measure[T], Protocol):
 
     def bins(self, nbins: int, left: float, right: float, /) -> tuple[float, ...]:
         step = (right - left)/nbins
-        return tuple([self.expected(left+i*step, left+(i+1)*step) for i in range(nbins+1)])
+        return tuple([self.expected(left+i*step, left+(i+1)*step) for i in range(nbins)])
 
     def intbins(self, left: int, right: int, /) -> tuple[float, ...]:
         return self.bins(right+1-left, left, right+1)
