@@ -65,7 +65,7 @@ class Distribution[T: float](AbstractStats, Measure[T], Protocol):
         return tuple([self.expected(left+i*step, left+(i+1)*step) for i in range(nbins)])
 
     def intbins(self, left: int, right: int, /) -> tuple[float, ...]:
-        return self.bins(right+1-left, left, right+1)
+        return self.bins(right+1-left, left-.5, right+.5)
 
     def sample(self, n: int, /) -> tuple[float, ...]:
         """Return pseudo-random data with this distribution."""
