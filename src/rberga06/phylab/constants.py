@@ -20,7 +20,7 @@ class _Isotope(_t.NamedTuple):
     T12: _MeasureLike[float]
     """Half-life"""
     @property
-    def mass(self, /) -> float:
+    def mass(self, /) -> _Datum[float]:
         """The mass of one atom"""
         return self.Z * (M_proton + M_electron) + (self.N - self.Z) * M_neutron
 
