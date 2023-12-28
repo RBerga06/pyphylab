@@ -26,12 +26,12 @@ class _Isotope(_t.NamedTuple):
 
 # Mathematical constants
 ln2 = _m.log(2)
-π = _m.pi
+π   = _m.pi
 # Physical constants
 g = _Datum(9.806, 0.001)  # kg m s⁻²
-avogadro = 6.02214076e23  # mol⁻¹
-M_proton  = 1.67262192369e-27 # kg
-M_neutron = 1.67492749804e-27 # kg
-M_electron = 9.1093837015e-31 # kg
+avogadro   = _Datum(6.022_140_76,     0.000_000_01    )*1e23  # mol⁻¹
+M_proton   = _Datum(1.672_621_923_69, 0.000_000_000_01)*1e-27 # kg
+M_neutron  = _Datum(1.674_927_498_04, 0.000_000_000_01)*1e-27 # kg
+M_electron = _Datum(9.109_383_701_5,  0.000_000_000_1 )*1e-31 # kg
 # Isotopes
-Th232 = _Isotope(232, 90, _y2s(_Datum(1.405, .001)*1e10))
+Th232 = _Isotope(232, 90, _y2s(_Datum(14.05, .01)*1e9))
