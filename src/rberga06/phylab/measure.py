@@ -112,7 +112,7 @@ class Datum[X: (float, int)](Measure[X]):
 
     @classmethod
     def from_delta_rel(cls, best: X, delta_rel: float, /) -> Self:
-        return cls(best, delta_rel * best)
+        return cls(best, delta_rel * abs(best))
 
 
 type MeasureLike[X: (float, int)] = Measure[X] | X
