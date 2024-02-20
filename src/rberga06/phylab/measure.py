@@ -19,7 +19,7 @@ class Measure[X: (float, int)](Protocol):
 
     @property
     def delta_rel(self, /) -> float:
-        return self.delta / self.best
+        return self.delta / abs(self.best)
 
     # --- Unary operators ---
 
