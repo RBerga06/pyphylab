@@ -61,7 +61,7 @@ class Measure[X: (float, int)](Protocol):
             return Datum(self.best / other, self.delta / abs(other))
         return Datum.from_delta_rel(self.best / other.best, self.delta_rel + other.delta_rel)
 
-    def __pow__(self, other: int, /) -> "Measure[X]":
+    def __pow__(self, other: float, /) -> "Measure[X]":
         return Datum[X].from_delta_rel(cast(X, self.best ** other), self.delta_rel * abs(other))
 
     # --- Right operands ---
