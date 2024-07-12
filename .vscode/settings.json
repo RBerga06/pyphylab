@@ -4,5 +4,10 @@
     ],
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,
-    "python.analysis.diagnosticMode": "workspace"
+    "cSpell.words": [
+        "evalf",
+        "maxn",
+        "pyphylab",
+        "sympy"
+    ],
 }
