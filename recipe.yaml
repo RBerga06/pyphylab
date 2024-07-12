@@ -8,6 +8,12 @@ package:
   name: ${{ name }}
   version: ${{ version }}
 
+source:
+  - path: src
+  - path: pyproject.toml
+  - path: LICENSE
+  - path: README.md
+
 build:
   noarch: python
   script: pip install . -v
