@@ -1,11 +1,10 @@
 [project]
 name = "rberga06-phylab"
-version = "1.0.0a0"
+version = "0.0.1.dev0"
 description = "A small Python library for random daily use in the Physics laboratory"
-authors = [
-    {name = "RBerga06", email = "78449715+RBerga06@users.noreply.github.com"},
-]
-requires-python = ">=3.12"
+authors = [{name = "RBerga06", email = "78449715+RBerga06@users.noreply.github.com"}]
+requires-python = ">= 3.12"
+dependencies = []
 readme = "README.md"
 license = {text = "AGPL-3.0-only"}
 
@@ -18,12 +17,6 @@ channels = ["conda-forge"]
 platforms = ["osx-64"]
 
 [tool.pixi.pypi-dependencies]
-rberga06-phylab = { path = ".", editable = true }
+pyphylab = { path = ".", editable = true }
 
 [tool.pixi.tasks]
-
-[tool.pixi.dependencies]
-sympy = ">=1.12.1,<1.13"
-
-[tool.pixi.feature.test.dependencies]
-pytest = ">=7.2.0,<7.3"

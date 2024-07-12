@@ -296,9 +296,9 @@ packages:
   timestamp: 1695147498447
 - kind: pypi
   name: rberga06-phylab
-  version: 1.0.0a0
+  version: 0.0.1.dev0
   path: .
-  sha256: f38349599dfd257eb7d6c46fc3b74613ca37c64c6445c3699bbb465926fbc0d0
+  sha256: 0f471237d3e878ee2ab2412da3370bce4047d4c38c4e64ae94dff6af1da88fd8
   requires_python: '>=3.12'
   editable: true
 - kind: conda
