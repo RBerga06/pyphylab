@@ -11,8 +11,6 @@ package:
 source:
   - path: src
   - path: pyproject.toml
-  - path: LICENSE
-  - path: README.md
 
 build:
   noarch: python
