@@ -39,7 +39,6 @@ tests:
 about:
   homepage: https://github.com/rberga06/pyphylab
   license: AGPL-3.0-only
-  license_file: LICENSE
   summary: utilities for physicists
   description: |
     `rberga06.phylab` is a small Python library for random daily use in the Physics laboratory
