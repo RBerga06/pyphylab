@@ -1,6 +1,6 @@
 [project]
 name = "rberga06-phylab"
-version = "0.0.1.dev1"
+version = "0.0.1.dev2"
 description = "A small Python library for random daily use in the Physics laboratory"
 authors = [{name = "RBerga06", email = "78449715+RBerga06@users.noreply.github.com"}]
 requires-python = ">= 3.12"

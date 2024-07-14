@@ -2,19 +2,24 @@
 
 context:
   name: "rberga06-phylab"
-  version: "0.0.1.dev1"
+  version: "0.0.1.dev2"
 
 package:
   name: ${{ name }}
   version: ${{ version }}
 
 source:
-  - path: src
-  - path: pyproject.toml
+  - git: https://github.com/rberga06/pyphylab.git
 
 build:
   noarch: python
   script: pip install . -v
+  files:
+    include:
+      - "*.py"
+      - "**/py.typed"
+    exclude:
+      - "**/__pycache__/"
 
 requirements:
   host:

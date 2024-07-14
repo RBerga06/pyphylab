@@ -9,6 +9,7 @@
         "maxn",
         "noarch",
         "phylab",
+        "pycache",
         "pyphylab",
         "pyproject",
         "setuptools",
