@@ -54,12 +54,12 @@ class Measure[X: (float, int)](Protocol):
     def __mul__(self, other: "Measure[Any] | float", /) -> "Measure[Any]":
         if isinstance(other, float | int):
             return Datum(self.best * other, self.delta * abs(other))
-        return Datum.from_delta_rel(self.best * other.best, self.delta_rel + other.delta_rel)
+        return Datum[X].from_delta_rel(self.best * other.best, self.delta_rel + other.delta_rel)
 
     def __truediv__(self, other: "Measure[float] | Measure[int] | float", /) -> "Measure[float]":
         if isinstance(other, float | int):
             return Datum(self.best / other, self.delta / abs(other))
-        return Datum.from_delta_rel(self.best / other.best, self.delta_rel + other.delta_rel)
+        return Datum[float].from_delta_rel(self.best / other.best, self.delta_rel + other.delta_rel)
 
     def __pow__(self, other: float, /) -> "Measure[X]":
         return Datum[X].from_delta_rel(cast(X, self.best ** other), self.delta_rel * abs(other))
@@ -89,8 +89,8 @@ class Measure[X: (float, int)](Protocol):
 
     def __rtruediv__(self, other: "Measure[float] | Measure[int] | float", /) -> "Measure[float]":
         if isinstance(other, float | int):
-            return Datum.from_delta_rel(other / self.best, self.delta_rel)
-        return Datum.from_delta_rel(other.best / self.best, other.delta_rel + self.delta_rel)
+            return Datum[float].from_delta_rel(other / self.best, self.delta_rel)
+        return Datum[float].from_delta_rel(other.best / self.best, other.delta_rel + self.delta_rel)
 
     # --- Comparison ---
 
