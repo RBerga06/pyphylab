@@ -1,0 +1,10 @@
+[package]
+name = "pyphylab"
+version = "0.0.1-alpha.1"
+edition = "2024"
+
+[lib]
+path = "src/phylab/lib.rs"
+
+[dependencies]
+pyo3 = "0.24.1"
