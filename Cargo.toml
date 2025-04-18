@@ -4,7 +4,12 @@ version = "0.0.1-alpha.1"
 edition = "2024"
 
 [lib]
+name = "_lib"
 path = "src/phylab/lib.rs"
+crate-type = ["cdylib"]
 
 [dependencies]
+num-complex = "0.4.6"
+num-traits = "0.2.19"
+numpy = "0.24.0"
 pyo3 = "0.24.1"

@@ -15,4 +15,5 @@
         "setuptools",
         "sympy"
     ],
+    "editor.formatOnSave": true,
 }
