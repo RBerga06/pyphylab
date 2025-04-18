@@ -111,7 +111,7 @@ impl<T: Float + Copy + ScalarOperand> Vector<T> {
 #[allow(non_camel_case_types)]
 #[pymodule]
 #[pyo3(name = "_lib")]
-#[pyo3(module = "rberga06.phylab._lib")]
+#[pyo3(module = "rberga06.phylab")]
 mod py {
     /// Internal utilities
     mod _utils {
@@ -119,6 +119,7 @@ mod py {
         use pyo3::prelude::*;
 
         /// A Python-friendly wrapper around [`Array1<f64>`]
+        #[derive(Debug, Clone)]
         pub struct vf64(pub Array1<f64>);
         impl<'py> FromPyObject<'py> for vf64 {
             fn extract_bound(ob: &pyo3::Bound<'py, PyAny>) -> Result<Self, PyErr> {
@@ -147,7 +148,7 @@ mod py {
         }
 
         /// An `f64` or an `Array<f64>`
-        #[derive(FromPyObject, IntoPyObject)]
+        #[derive(Debug, Clone, FromPyObject, IntoPyObject)]
         pub enum f64Value {
             Scalar(f64),
             Array(vf64),
