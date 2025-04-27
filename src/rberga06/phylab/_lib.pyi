@@ -1,3 +1,4 @@
+from ._tensor import *  # noqa: F403
 from typing import final, overload
 import numpy as np
 from numpy.typing import NDArray
