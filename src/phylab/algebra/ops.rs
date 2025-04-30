@@ -1,7 +1,6 @@
 //! Operations
-use crate::utils::bool::{Bool, False};
-
 use super::unary::UnarySet;
+use crate::utils::bool::*;
 use std::{convert::Infallible, marker::PhantomData};
 
 /// A unary operation
@@ -55,10 +54,29 @@ impl Unary for Nullify {
 /// A binary operation
 pub trait Binary {
     type Assoc: Bool;
+    type Commut: Bool;
 }
 
 /// The binary operation that does not exist
 // TODO: When we have `!` we should switch to it
 impl Binary for Infallible {
     type Assoc = False;
+    type Commut = False;
+}
+
+/// Operations with Rust syntax support
+pub mod rust {
+    use super::*;
+
+    pub struct Add;
+    impl Binary for Add {
+        type Assoc = True;
+        type Commut = True;
+    }
+
+    pub struct Mul;
+    impl Binary for Mul {
+        type Assoc = True;
+        type Commut = True;
+    }
 }

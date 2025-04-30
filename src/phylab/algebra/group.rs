@@ -1,6 +1,6 @@
-//! Group-like structures
+//! Groups
 use super::ops::Binary;
-use crate::utils::bool::*;
+use crate::{ImplRustOpAddRef, utils::bool::*};
 use std::{
     marker::PhantomData,
     ops::{Add, Mul, Neg, Sub},
@@ -11,6 +11,7 @@ use std::{
 ///  * has a neutral element
 ///  * has an inverse (unary operation)
 pub trait Group<Op: Binary<Assoc = True> + ?Sized> {
+    /// The binary operation
     fn op(&self, rhs: &Self) -> Self;
     /// The neutral element / identity (both right and left)
     fn id() -> Self;
@@ -49,9 +50,16 @@ pub trait Group<Op: Binary<Assoc = True> + ?Sized> {
     }
 }
 
+/// Implement addition, subtraction, etc. for a struct that implements `Group`.
+#[macro_export]
+macro_rules! ImplRustAddOps {
+    () => {};
+}
+
 /// Helper for operating with a group in additive notation.
 #[repr(transparent)]
 pub struct AsAdd<Op: Binary<Assoc = True> + ?Sized, G: Group<Op>>(G, PhantomData<Op>);
+ImplRustOpAddRef!(AsAdd<Op: Binary<Assoc = True>; G>: { |lhs, rhs| lhs.add(rhs) });
 impl<Op: Binary<Assoc = True> + ?Sized, G: Group<Op>> AsAdd<Op, G> {
     fn wrap(elem: G) -> Self {
         Self(elem, PhantomData)
@@ -77,34 +85,34 @@ impl<Op: Binary<Assoc = True> + ?Sized, G: Group<Op>> AsAdd<Op, G> {
         Self::wrap(self.unwrap_ref().inv())
     }
 }
-impl<Op: Binary<Assoc = True> + ?Sized, G: Group<Op>> Add for &AsAdd<Op, G> {
-    type Output = AsAdd<Op, G>;
-    #[inline(always)]
-    fn add(self, rhs: Self) -> Self::Output {
-        AsAdd::wrap(self.0.op(rhs.unwrap_ref()))
-    }
-}
-impl<Op: Binary<Assoc = True> + ?Sized, G: Group<Op>> Add<&Self> for AsAdd<Op, G> {
-    type Output = Self;
-    #[inline(always)]
-    fn add(self, rhs: &Self) -> Self::Output {
-        AsAdd::wrap(self.0.op(rhs.unwrap_ref()))
-    }
-}
-impl<Op: Binary<Assoc = True> + ?Sized, G: Group<Op>> Add<AsAdd<Op, G>> for &AsAdd<Op, G> {
-    type Output = AsAdd<Op, G>;
-    #[inline(always)]
-    fn add(self, rhs: AsAdd<Op, G>) -> Self::Output {
-        AsAdd::wrap(self.0.op(rhs.unwrap_ref()))
-    }
-}
-impl<Op: Binary<Assoc = True> + ?Sized, G: Group<Op>> Add for AsAdd<Op, G> {
-    type Output = Self;
-    #[inline(always)]
-    fn add(self, rhs: Self) -> Self::Output {
-        AsAdd::wrap(self.0.op(rhs.unwrap_ref()))
-    }
-}
+// impl<Op: Binary<Assoc = True> + ?Sized, G: Group<Op>> Add for &AsAdd<Op, G> {
+//     type Output = AsAdd<Op, G>;
+//     #[inline(always)]
+//     fn add(self, rhs: Self) -> Self::Output {
+//         AsAdd::wrap(self.0.op(rhs.unwrap_ref()))
+//     }
+// }
+// impl<Op: Binary<Assoc = True> + ?Sized, G: Group<Op>> Add<&Self> for AsAdd<Op, G> {
+//     type Output = Self;
+//     #[inline(always)]
+//     fn add(self, rhs: &Self) -> Self::Output {
+//         AsAdd::wrap(self.0.op(rhs.unwrap_ref()))
+//     }
+// }
+// impl<Op: Binary<Assoc = True> + ?Sized, G: Group<Op>> Add<AsAdd<Op, G>> for &AsAdd<Op, G> {
+//     type Output = AsAdd<Op, G>;
+//     #[inline(always)]
+//     fn add(self, rhs: AsAdd<Op, G>) -> Self::Output {
+//         AsAdd::wrap(self.0.op(rhs.unwrap_ref()))
+//     }
+// }
+// impl<Op: Binary<Assoc = True> + ?Sized, G: Group<Op>> Add for AsAdd<Op, G> {
+//     type Output = Self;
+//     #[inline(always)]
+//     fn add(self, rhs: Self) -> Self::Output {
+//         AsAdd::wrap(self.0.op(rhs.unwrap_ref()))
+//     }
+// }
 impl<Op: Binary<Assoc = True> + ?Sized, G: Group<Op>> Neg for AsAdd<Op, G> {
     type Output = Self;
     fn neg(self) -> Self::Output {

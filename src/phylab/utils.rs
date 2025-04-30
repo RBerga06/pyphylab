@@ -27,3 +27,36 @@ pub mod bool {
         const VAL: bool = false;
     }
 }
+
+/// Helper traits for defining arithmetic operations in Rust
+pub mod ops {
+    #[macro_export]
+    macro_rules! ImplRustOpAddRef {
+        ($Struct:ident<$($T:ident$(: $($Bound:tt),*)?);*>: $body:expr) => {
+            impl<$($T$(: $($Bound)+*)?),*> std::ops::Add for &$Struct<$($T),*> {
+                type Output = $Struct<$($T),*>;
+                fn add(self, rhs: &$Struct<$($T),*>) -> Self::Output { ($body)(self, rhs) }
+            }
+            impl<$($T$(: $($Bound)+*)?),*> std::ops::Add<&$Struct<$($T),*>> for $Struct<$($T),*> {
+                type Output = $Struct<$($T),*>;
+                fn add(self, rhs: &$Struct<$($T),*>) -> Self::Output { ($body)(&self, rhs) }
+            }
+            impl<$($T$(: $($Bound)+*)?),*> std::ops::Add<$Struct<$($T),*>> for &$Struct<$($T),*> {
+                type Output = $Struct<$($T),*>;
+                fn add(self, rhs: $Struct<$($T),*>) -> Self::Output { ($body)(self, &rhs) }
+            }
+            impl<$($T$(: $($Bound)+*)?),*> std::ops::Add for $Struct<$($T),*> {
+                type Output = $Struct<$($T),*>;
+                fn add(self, rhs: $Struct<$($T),*>) -> Self::Output { ($body)(&self, &rhs) }
+            }
+        };
+    }
+
+    pub trait AddSubNegRef {
+        fn add(&self, other: &Self) -> Self;
+        fn neg(&self) -> Self;
+        fn sub(&self, other: &Self) -> Self {
+            self + -other
+        }
+    }
+}

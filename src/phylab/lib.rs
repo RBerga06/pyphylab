@@ -1,11 +1,11 @@
-mod algebra;
+// mod algebra;
 mod dual;
-mod linalg;
-mod tensor;
-mod utils;
-pub use algebra::*;
+// mod linalg;
+// mod tensor;
+// mod utils;
+// pub use algebra::*;
 pub use dual::*;
-pub use linalg::*;
+// pub use linalg::*;
 
 use pyo3::prelude::*;
 
