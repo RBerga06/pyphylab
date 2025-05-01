@@ -6,6 +6,9 @@
 Developed with ❤️ by @RBerga06, Physics student @ UniPR (Parma, Italy).\
 """
 
+# TODO: Once we have a fully-working Rust backend switch this with `from ._lib import *`
+from ._tensor_numpy import *
+
 # Core data structures & utilities
 from .measure import *
 from .data import *
