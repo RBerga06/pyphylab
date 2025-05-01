@@ -5,7 +5,7 @@ description = "A small Python library for random daily use in the Physics labora
 authors = [{name = "RBerga06", email = "78449715+RBerga06@users.noreply.github.com"}]
 requires-python = ">= 3.12"
 dependencies = [
-    "numpy", "numpy-typing"
+    "numpy", "numpy-typing", "typing-extensions"
 ]
 readme = "README.md"
 license = {text = "AGPL-3.0-only"}

@@ -22,6 +22,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-64/xz-5.2.6-h775f41a_0.tar.bz2
       - pypi: https://files.pythonhosted.org/packages/a2/30/182db21d4f2a95904cec1a6f779479ea1ac07c0647f064dea454ec650c42/numpy-2.2.4-cp312-cp312-macosx_10_13_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/b0/71/0e00b8ea4d0a6b6ec89ee16b68225fbe68e390e43e5e49c4532d9b7e8165/numpy_typing-1.1.1.tar.gz
+      - pypi: https://files.pythonhosted.org/packages/8b/54/b1ae86c0973cc6f0210b53d508ca3641fb6d0c56823f288d108bc7ab3cc8/typing_extensions-4.13.2-py3-none-any.whl
       - pypi: .
       osx-arm64:
       - conda: https://conda.anaconda.org/conda-forge/osx-arm64/bzip2-1.0.8-h99b78c6_7.conda
@@ -41,6 +42,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/noarch/tzdata-2025b-h78e105d_0.conda
       - pypi: https://files.pythonhosted.org/packages/c3/bc/2b3545766337b95409868f8e62053135bdc7fa2ce630aba983a2aa60b559/numpy-2.2.4-cp313-cp313-macosx_11_0_arm64.whl
       - pypi: https://files.pythonhosted.org/packages/b0/71/0e00b8ea4d0a6b6ec89ee16b68225fbe68e390e43e5e49c4532d9b7e8165/numpy_typing-1.1.1.tar.gz
+      - pypi: https://files.pythonhosted.org/packages/8b/54/b1ae86c0973cc6f0210b53d508ca3641fb6d0c56823f288d108bc7ab3cc8/typing_extensions-4.13.2-py3-none-any.whl
       - pypi: .
 packages:
 - conda: https://conda.anaconda.org/conda-forge/osx-64/bzip2-1.0.8-h10d778d_5.conda
@@ -294,10 +296,11 @@ packages:
 - pypi: .
   name: rberga06-phylab
   version: 0.0.1.dev2
-  sha256: 850d7c9faa416be59898c204d17ad36fbb246e663c4ee858db343a58da14fe2c
+  sha256: 17affefa3b5702fe2bad541831eec3aee2988636a44c7ca600f67b6733946f51
   requires_dist:
   - numpy
   - numpy-typing
+  - typing-extensions
   requires_python: '>=3.12'
   editable: true
 - conda: https://conda.anaconda.org/conda-forge/osx-64/readline-8.2-h9e318b2_1.conda
@@ -340,6 +343,11 @@ packages:
   purls: []
   size: 3145523
   timestamp: 1699202432999
+- pypi: https://files.pythonhosted.org/packages/8b/54/b1ae86c0973cc6f0210b53d508ca3641fb6d0c56823f288d108bc7ab3cc8/typing_extensions-4.13.2-py3-none-any.whl
+  name: typing-extensions
+  version: 4.13.2
+  sha256: a439e7c04b49fec3e5d3e2beaa21755cadbbdc391694e28ccdd36ca4a1408f8c
+  requires_python: '>=3.8'
 - conda: https://conda.anaconda.org/conda-forge/noarch/tzdata-2024a-h0c530f3_0.conda
   sha256: 7b2b69c54ec62a243eb6fba2391b5e443421608c3ae5dbff938ad33ca8db5122
   md5: 161081fc7cec0bfda0d86d7cb595f8d8
